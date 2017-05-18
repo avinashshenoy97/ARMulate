@@ -1,0 +1,28 @@
+{
+	"name": "armulate",
+	"version": "0.0.1",
+	"main": "index.html",
+	"description": "ARM Simulator",
+	"maintainers": [
+		{"name":"Avinash Shenoy"},
+		{"name":"Aditi Srinivas"}
+	],
+	"window" : {
+		"id": "main",
+		"title": "ARMulate",
+		"fullscreen": true,
+		"resizeable": false
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/avinashshenoy97/armulate"
+	},
+	"keywords": [
+		"arm",
+		"simulator",
+		"node",
+		"webkit",
+		"nw"
+	],
+	"license": "MIT"
+}
