@@ -13,3 +13,9 @@ The application is written using web technologies and run using nw, formerly kno
 ##### Run the app
 	cd /path/to/app/
 	/path/to/nw .
+
+/path/to/nw is the path to the binary file of NW.js.
+
+On Winodws, it's nw.exe;
+On Linux, it's nw;
+On Mac, it's nwjs.app/Contents/MacOS/nwjs
