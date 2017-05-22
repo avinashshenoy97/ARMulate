@@ -1,0 +1,71 @@
+body {
+	background-color: black;
+}
+
+.container {
+	display: table;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+#header {
+	background-color: silver;
+	position: fixed;
+	height: 34px;
+	width: 100%;
+	margin-bottom: 8px;
+	margin-left: 8px;
+	padding: 8px;
+}
+
+#content {
+	position: fixed;
+	top: 66px;
+}
+
+#rbank {
+	padding: 8px;
+	background-color: silver;
+	background-clip: content-box;
+	height: 100%;
+	float: left;
+}
+
+#editor {
+	padding: 8px;
+	float: right;
+}
+
+#editor > textarea {
+	height: 100%;
+	width: 100%;
+	font-size: 1em;
+}
+
+.col1 {
+	width: 25%;
+}
+
+.col2 {
+	width: 75%;
+}
+
+table, tr {
+	height: 100%;
+	width: 100%;
+	padding: 0;
+}
+
+td {
+	text-align: center;
+}
+
+#memory {
+	width: 100%;
+	padding: 8px;
+	position: fixed;
+	bottom: 8px;
+	background-color: silver;
+	background-clip: content-box;
+}
