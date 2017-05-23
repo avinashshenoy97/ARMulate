@@ -1,17 +1,17 @@
 // Compiles a given program
 function processcont(tp){
-    dataprocessing = ['and', 'add', 'sub', 'rsb', 'adc', 'sbc', 'rsc', 'orr', 'eor', 'bic', 'clz', 'tst', 'teq']
-    dataprotworeg = ['mov', 'mvn', 'cmp', 'cmn']
-    datatransfer = ['ldr', 'str', 'ldm', 'stm']
-    conditioncodes = ['eq', 'ne', 'cs', 'hs', 'cc', 'lo', 'mi', 'pl', 'vs', 'vc', 'hi', 'ls', 'ge', 'lt', 'gt', 'le', 'al', 'al', 'nv']
-    cont = document.getElementById('code').value    // get the code
+    var dataprocessing = ['and', 'add', 'sub', 'rsb', 'adc', 'sbc', 'rsc', 'orr', 'eor', 'bic', 'clz', 'tst', 'teq']
+    var dataprotworeg = ['mov', 'mvn', 'cmp', 'cmn']
+    var datatransfer = ['ldr', 'str', 'ldm', 'stm']
+    var conditioncodes = ['eq', 'ne', 'cs', 'hs', 'cc', 'lo', 'mi', 'pl', 'vs', 'vc', 'hi', 'ls', 'ge', 'lt', 'gt', 'le', 'al', 'al', 'nv']
+    var cont = document.getElementById('code').value    // get the code
     cont = cont.toLowerCase();      // change to lower case
     cont = cont.split('\n');        // makes a list of instructions
     remspace(cont);         // removes extra spaces in the instructions
-    error_flag = 0;         // indicates if there is a syntax error while compiling. Set to 1 if there is an error
+    var error_flag = 0;         // indicates if there is a syntax error while compiling. Set to 1 if there is an error
     for(i = 0; i < cont.length; i++){
-        ins = '';  
-        regs = '';       
+        var ins = '';  
+        var regs = '';       
         for(j = 0; j < cont[i].length; j++){
             if(cont[i][j] == ' '){
                 break;
@@ -21,8 +21,7 @@ function processcont(tp){
         for(k = j + 1; k < cont[i].length; k++){
             regs += cont[i][k];
         }
-        alert(regs);
-        opcode = ins.slice(0, 3);   // get the opcode
+        var opcode = ins.slice(0, 3);   // get the opcode
         for(j = 0; j < dataprocessing.length; j++){     
             if(opcode == dataprocessing[j]){
                 break;
@@ -93,16 +92,16 @@ function checkdpregs(regs, categ){
     var regshift = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,][la][s][rl]\s[r]([0-9]|1[0-5])$/
     var grptwo = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])$/
     if(categ == 0){                     // for 3 register instructions
-        noshiftval = noshift.exec(regs);
-        immshiftval = immshift.exec(regs); 
-        regshiftval = regshift.exec(regs); 
+        var noshiftval = noshift.exec(regs);
+        var immshiftval = immshift.exec(regs); 
+        var regshiftval = regshift.exec(regs); 
         if(noshiftval != null || immshiftval != null || regshiftval != null){
             return 0;
         }
         return 1;
     }
     else if(categ == 1){        // for 2 register instructions
-        grptwoval = grptwo.exec(regs);
+        var grptwoval = grptwo.exec(regs);
         if(grptwoval != null){
             return 0;
         }
