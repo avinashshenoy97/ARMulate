@@ -8,12 +8,13 @@
 
 <body onresize="location.reload()">
 	<div id="header">
-		<img src="resources/dec.png">
-		<img src="resources/bin.svg">
-		<img src="resources/hex.png">
-		<img src="resources/interpret.svg">
-		<img src="resources/compile.svg">
-		<img src="resources/run.svg">
+		<img id = "dec" src="resources/dec.png">
+		<img id = "bin" src="resources/bin.svg">
+		<img id = "hex" src="resources/hex.png">
+		<img id = "interpret "src="resources/interpret.svg">
+		<img id = "compile" onclick = "processcont('0')" src="resources/compile.svg">
+		<img id = "run" onclick = "processcont('1')" src="resources/run.svg">
+		<script src = "scripts/comprun.js"></script>
 	</div>
 	<div class="container" id="content">
 		<div id="rbank">
@@ -29,7 +30,6 @@
 	</div>
 
 	<script src="scripts/index.js">
-
 	</script>
 </body>
 
