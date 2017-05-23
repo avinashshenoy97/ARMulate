@@ -17,6 +17,15 @@ body {
 	margin-bottom: 8px;
 	margin-left: 8px;
 	padding: 8px;
+	overflow: scroll;
+}
+
+#header > img {
+	border: 1px solid black;
+	height: 27px;
+	widows: 27px;
+	margin: 0px 10px 0px 10px;
+	padding: 3px;
 }
 
 #content {
@@ -41,14 +50,18 @@ body {
 	height: 100%;
 	width: 100%;
 	font-size: 1em;
+	resize: none;
+	overflow: scroll;
 }
 
 .col1 {
 	width: 25%;
+	border: 1px solid black;
 }
 
 .col2 {
 	width: 75%;
+	border: 2px solid black;
 }
 
 table, tr {
@@ -59,13 +72,18 @@ table, tr {
 
 td {
 	text-align: center;
+	overflow: scroll;
 }
 
 #memory {
-	width: 100%;
 	padding: 8px;
 	position: fixed;
 	bottom: 8px;
 	background-color: silver;
 	background-clip: content-box;
+	overflow: scroll;
+}
+
+#headerhelper {
+	padding: 2px;
 }

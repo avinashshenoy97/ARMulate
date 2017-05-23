@@ -41,8 +41,58 @@ document.getElementById("code").style.width = (parseInt(document.getElementById(
 d = document.getElementById("memory");
 h = 8 * 3;
 for(x = 0 ; x < document.body.children.length ; x++) {
-	console.log(document.body.children[x])
 	h += parseInt(document.body.children[x].offsetHeight);
-	console.log(h)
 }
 d.style.height = (window.innerHeight - h) + "px";
+d.style.width = (window.innerWidth - (8 * 3)) + "px";
+
+function appear(event) {
+	n = Array.from(event.target.parentNode.children).indexOf(event.target) + 1;
+	var d = document.createElement("div");
+	d.style.backgroundColor = "#f9e4b1";
+	d.style.zIndex = "3";
+	d.style.position = "absolute";
+	d.style.top = event.clientY + "px";
+	d.style.left = event.clientX + "px";
+	d.id = "headerhelper";
+	
+	switch(n) {
+		case 1:
+			d.innerHTML = "Decimal";
+			break;
+		
+		case 2:
+			d.innerHTML = "Binary";
+			break;
+
+		case 3:
+			d.innerHTML = "Hexadecimal";
+			break;
+
+		case 4:
+			d.innerHTML = "Interpret";
+			break;
+
+		case 5:
+			d.innerHTML = "Compile";
+			break;
+
+		case 6:
+			d.innerHTML = "Run";
+			break;
+	}
+
+	document.body.appendChild(d);
+	console.log(n);
+	console.log(d);
+}
+
+function disappear(event) {
+	document.getElementById("headerhelper").remove();
+}
+
+d = document.getElementById("header").children;
+for(x = 0 ; x < d.length ; x++) {
+	d[x].addEventListener("mouseover", appear);
+	d[x].addEventListener("mouseout", disappear);
+}
