@@ -6,6 +6,11 @@
 	<link rel="stylesheet" type="text/css" href="style/index.css">
 	<script>
 		function refreshpage() {
+			var d = document.getElementById("compile");
+			d.style.display = "inline";
+			d = d.nextElementSibling;
+			d.style.display = "";
+
 			var cont = document.getElementById("code");
 
 			if(cont.tagName == "DIV")
@@ -31,13 +36,19 @@
 
 <body onresize="location.reload()">
 	<div id="header">
-		<img id = "dec" src="resources/dec.png">
-		<img id = "bin" src="resources/bin.svg">
-		<img id = "hex" src="resources/hex.png">
-		<img id = "interpret "src="resources/interpret.svg">
-		<img id = "compile" onclick = "processcont('0')" src="resources/compile.svg">
-		<img id = "run" onclick = "processcont('1')" src="resources/run.svg">
-		<img id = "refresh" onclick = "refreshpage()" src="resources/reload.svg">
+		<img id = "dec" src="resources/dec.png" class="enab" style="display: none;">
+		<img class = "dis" src="resources/dec.png" style="display: inline;">
+		<img id = "bin" src="resources/bin.svg" class="enab">
+		<img class = "dis" src="resources/bin.svg">
+		<img id = "hex" src="resources/hex.png" class="enab">
+		<img class = "dis" src="resources/hex.png">
+		<img id = "interpret "src="resources/interpret.svg" class="enab">
+		<img class = "dis" src="resources/interpret.svg">
+		<img id = "compile" onclick = "processcont('0')" src="resources/compile.svg" class="enab">
+		<img class = "dis" onclick = "processcont('0')" src="resources/compile.svg">
+		<img id = "run" onclick = "processcont('1')" src="resources/run.svg" class="enab">
+		<img class = "dis" onclick = "processcont('1')" src="resources/run.svg">
+		<img id = "refresh" onclick = "refreshpage()" src="resources/reload.svg" class="enab">
 		<script src = "scripts/comprun.js"></script>
 	</div>
 	<div class="container" id="content">
@@ -70,8 +81,8 @@
 	<div id="memory">
 	</div>
 
-	<script src="scripts/index.js">
-	</script>
+	<script src="scripts/index.js"></script>
+	<script src="scripts/regcontents.js"></script>
 </body>
 
 </html>

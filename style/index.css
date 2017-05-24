@@ -23,9 +23,21 @@ body {
 #header > img {
 	border: 1px solid black;
 	height: 27px;
-	widows: 27px;
+	width: 27px;
 	margin: 0px 10px 0px 10px;
 	padding: 3px;
+}
+
+.dis {
+	display: none;
+	-webkit-filter: invert(100%);
+	filter: invert(100%);
+}
+
+.enab:hover {
+	-webkit-filter: invert(100%);
+	filter: invert(100%);
+	cursor: pointer;
 }
 
 #content {
@@ -60,13 +72,17 @@ body {
 }
 
 .col1 {
+	font-weight: 500;
 	width: 25%;
 	border: 1px solid black;
 }
 
 .col2 {
+	letter-spacing: 2px;
+	font-weight: 500;
 	width: 75%;
 	border: 2px solid black;
+	overflow: scroll;
 }
 
 #cpsr td {

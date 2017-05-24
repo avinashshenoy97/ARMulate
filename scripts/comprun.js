@@ -1,5 +1,15 @@
 // Compiles a given program
 function processcont(tp){
+    var d = document.getElementById("compile");
+    d.style.display = "none";
+    d = d.nextElementSibling;
+    d.style.display = "inline";
+
+    var d = document.getElementById("run");
+    d.style.display = "none";
+    d = d.nextElementSibling;
+    d.style.display = "inline";
+     
     var d = document.createElement("div");
     var cont = document.getElementById('code').value    // get the code
     d.innerHTML = cont;
