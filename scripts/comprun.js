@@ -26,6 +26,7 @@ function processcont(tp){
     for(i = 0; i < cont.length; i++){
         var ins = '';  
         var regs = '';       
+        var cc = undefined;
         for(j = 0; j < cont[i].length; j++){
             if(cont[i][j] == ' '){
                 break;
@@ -98,31 +99,64 @@ function processcont(tp){
         }
         if(j < memoryaccess.length){  // check if it is a memory accessing instruction
             if(j < 2) {
-                if(opcode.length > 4){
-                    if(typeof (conditioncodes.find(opcode.slide(3,5))) === 'undefined') {
+                if(ins.length > 4){
+                    cc = ins.slide(3,5);
+                    if(typeof (conditioncodes.find(function(c) {return c == cc})) === 'undefined') {
                         error_flag = 1;
                         break;
                     }
                 }
-                if(opcode.length == 4 || opcode.length == 6) {
-                    if(opcode.slice(-1) != 'b') {
+                if(ins.length == 4 || ins.length == 6) {
+                    if(ins.slice(-1) != 'b') {
                         error_flag = 1;
                         break;
                     }
                 }
+
+                error_flag = checkdpregs(regs, 2);
+                if(error_flag){
+                    break;
+                }
+
+                //add code to execute instruction here (if tp)
+
+                continue;       //move on to next instruction 
             }
+            else {
+                modes = ['ia', 'ib', 'da', 'db', 'fa', 'fd', 'ed', 'ea'];
+                if(ins.length > 5) {
+                    cc = ins.slice(3,5);
+                    if(typeof (conditioncodes.find(function(c) {return c == cc})) === 'undefined') {
+                        error_flag = 1;
+                        break;
+                    }
 
-            error_flag = checkdpregs(regs, 2);
-            if(error_flag){
-                break;
+                    mode = ins.slice(5,7);
+                    if(typeof(modes.find(function(m) {return m == mode})) === 'undefined') {
+                        error_flag = 1;
+                        break;
+                    }
+                }
+                else {
+                    mode = ins.slice(3, 5); 
+                    if(typeof(modes.find(function(m) {return m == mode})) === 'undefined') {
+                        error_flag = 1;
+                        break;
+                    }
+                }
+
+                error_flag = checkdpregs(regs, 3);
+                if(error_flag){
+                    break;
+                }
+
+                //add code to execute instruction here (if tp)
+
+                continue;       //move on to next instruction 
             }
-
-            //add code to execute instruction here (if tp)
-
-            continue;       //move on to next instruction  
         }
     }
-    
+
     if(error_flag){
         alert("Syntax error!");
         var cont = document.getElementById("code").innerHTML;
@@ -136,7 +170,7 @@ function processcont(tp){
         for(x = i+1 ; x < cont.length ; x++) {
             fcont += cont[x] + "<br/>";
         }
-        document.getElementById("code").innerHTML = fcont + "<br/>";
+        document.getElementById("code").innerHTML = fcont;
     }  
     else{
         alert("No errors!");
@@ -146,6 +180,7 @@ function processcont(tp){
 // Removes extra spaces in the list of instructions
 function remspace(cont){
     for(i = 0; i < cont.length; i++){
+        cont[i] = cont[i].replace(/\,/g, ', ');
         cont[i] = cont[i].replace(/\s+\,/g, ', ');
         cont[i] =  cont[i].replace(/\s+/g, ' ').trim();
     }
@@ -161,6 +196,8 @@ function checkdpregs(regs, categ){
     var nooffset = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])$/
     var immorpreoffset = /^[r]([0-9]|1[0-5])[,]\s\[[r]([0-9]|1[0-5])[,]\s[#]\-?([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-3][0-9][0-9][0-9]|40[0-8][0-9]|409[0-5])\]!?$/
     var postind = /^[r]([0-9]|1[0-5])[,]\s\[[r]([0-9]|1[0-5])\][,]\s[#]\-?([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-3][0-9][0-9][0-9]|40[0-8][0-9]|409[0-5])?$/
+
+    var mulreglist = /^[r]([0-9]|1[0-5])[,]\s\{(([r]([0-9]|1[0-5]))|([r]([0-9]|1[0-5])\-[r]([0-9]|1[0-5])))([,]\s(([r]([0-9]|1[0-5]))|([r]([0-9]|1[0-5])\-[r]([0-9]|1[0-5]))))*\}$/
 
     switch(categ) {
     case 0:                     // for 3 register instructions
@@ -190,15 +227,24 @@ function checkdpregs(regs, categ){
         if(nooffsetval != null) {
             return 0;
         }
-        var immorpreoffset = immorpreoffset.exec(regs); 
-        if(immorpreoffset != null) {
+        var immorpreoffsetval = immorpreoffset.exec(regs); 
+        if(immorpreoffsetval != null) {
             return 0;
         }
-        var postind = postind.exec(regs); 
-        if(postind != null) {
+        var postindval = postind.exec(regs); 
+        if(postindval != null) {
             return 0;
         }
         return 1;
+
+    case 3:         //memory access with multiple registers
+        var mulregval = mulreglist.exec(regs);
+        if(mulregval != null) {
+            return 0;
+        }
+        return 1;
+
+
     }
     return 1;
 }
