@@ -99,6 +99,7 @@ function processcont(tp){
     }
     
     alert(cont)
+    alert("HELP" + error_flag);
     //alert(JSON.stringify(datasec))
     //alert(JSON.stringify(labs))
 
@@ -266,6 +267,7 @@ function processcont(tp){
         //alert(error_flag + "  e1")
         if(j < controlflow.length){     // check if it is a control flow instruction
             //alert('hre')
+            //alert(ins);
             if(ins.length > 2){
                 conds = ins.slice(1);
                 for(k = 0; k < conditioncodes.length; k++){     // check the validity of the condition codes
@@ -273,19 +275,18 @@ function processcont(tp){
                         break;
                     }
                 }
-                if(j == conditioncodes.length){
+                if(k == conditioncodes.length){
                     error_flag = 1;
                     break;
                 }
             }
-            //alert("r " + regs)
-            for(k = 0; k < cont.length; k++){
-                if(cont[k].indexOf(regs) != -1 && cont[k] != cont[i] && cont[k].indexOf(regs) < cont[k].indexOf(':')){   // check if branch address is valid
-                    //alert(cont[k]);
-                    break;
+            labflag = 1;       // flag to check the validity of the label in the instruction
+            for(key in labs){
+                if(regs == key){
+                    labflag = 0;
                 }
             }
-            if(k == cont.length){
+            if(labflag){
                 error_flag = 1;
                 break;
             }
