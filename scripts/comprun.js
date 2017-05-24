@@ -37,7 +37,17 @@ function preprocess() {
         else {
             var blabl = icont[i].search(":");
             if(blabl != -1) {
-                cont.push(icont[i].slice(blabl+1).toLowerCase().trim());
+                var ins = icont[i].slice(blabl+1).trim();
+                if(ins.search(/^(b|B)(l|L)?$/g) != -1) {
+                    var t = ins.indexOf(" ");
+                    ins = ins.slice(0, t).toLowerCase() + ins.slice(t);
+                }
+                else {
+                    ins = ins.toLowerCase();
+                }
+                remspace(ins);
+                cont.push(ins);
+                
                 blabl = icont[i].slice(0, blabl);
                 if(blabl.search(" ") != -1)
                     return true;
@@ -45,9 +55,21 @@ function preprocess() {
                 labs[blabl] = i;
             }
             else {
-                icont[i] = icont[i].toLowerCase();
-                remspace(icont[i]);              // removes extra spaces in the instructions
-                cont.push(icont[i]);
+                var ins = icont[i];
+                if(ins.search(/^(b)(l)?/gi) != -1) {
+                    var t = ins.indexOf(" ");
+                    ins = ins.slice(0, t).toLowerCase() + ins.slice(t);
+                }
+                else {
+                    var t = ins.indexOf("=");
+                    if(t == -1)
+                        ins = ins.toLowerCase();
+                    else {
+                        ins = ins.slice(0, t).toLowerCase() + ins.slice(t);
+                    }
+                }
+                remspace(ins);
+                cont.push(ins);
             }
         }
     }
@@ -235,15 +257,15 @@ function processcont(tp){
         if(ins.length > 2){             // check if opcode is B 
             opcode = ins.slice(0, 1);
         }
-        alert(error_flag + "  e")
+//        alert(error_flag + "  e")
         for(j = 0; j < controlflow.length; j++){   
             if(opcode == controlflow[j]){
                 break;
             }
         }
-        alert(error_flag + "  e1")
+        //alert(error_flag + "  e1")
         if(j < controlflow.length){     // check if it is a control flow instruction
-            alert('hre')
+            //alert('hre')
             if(ins.length > 2){
                 conds = ins.slice(1);
                 for(k = 0; k < conditioncodes.length; k++){     // check the validity of the condition codes
@@ -256,6 +278,7 @@ function processcont(tp){
                     break;
                 }
             }
+            //alert("r " + regs)
             for(k = 0; k < cont.length; k++){
                 if(cont[k].indexOf(regs) != -1 && cont[k] != cont[i] && cont[k].indexOf(regs) < cont[k].indexOf(':')){   // check if branch address is valid
                     //alert(cont[k]);
