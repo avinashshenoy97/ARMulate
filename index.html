@@ -11,6 +11,11 @@
 			d = d.nextElementSibling;
 			d.style.display = "";
 
+			var d = document.getElementById("run");
+			d.style.display = "inline";
+			d = d.nextElementSibling;
+			d.style.display = "";
+
 			var cont = document.getElementById("code");
 
 			if(cont.tagName == "DIV")
@@ -30,6 +35,10 @@
 			e.id = "code";
 			e.style.width = (parseInt(document.getElementById("editor").style.width) - (8)) + "px";
 			e.value = cont;
+
+			window.datasec = new Object();
+			window.cont = [];
+			window.labs = new Object();
 		}
 	</script>
 </head>

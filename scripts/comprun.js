@@ -1,18 +1,18 @@
-// Compiles a given program
-function processcont(tp){
+var datasec = new Object();     //labels in data section
+var cont = [];
+var labs = new Object();        //labels in code(branch targets)
+
+//preprocess
+function preprocess() {
+    cont = window.cont;
     var d = document.getElementById("compile");
     d.style.display = "none";
     d = d.nextElementSibling;
     d.style.display = "inline";
 
-    var d = document.getElementById("run");
-    d.style.display = "none";
-    d = d.nextElementSibling;
-    d.style.display = "inline";
-     
     var d = document.createElement("div");
-    var cont = document.getElementById('code').value    // get the code
-    d.innerHTML = cont;
+    var icont = document.getElementById('code').value    // get the code
+    d.innerHTML = icont;
     d.id = "code";
     d.style.backgroundColor = "Gainsboro";
     d.style.fontWeight = "bold";
@@ -20,6 +20,43 @@ function processcont(tp){
     document.getElementById("code").remove();
     document.getElementById("editor").appendChild(d);
 
+    var icont = icont.split('\n');        // makes a list of instructions
+    for(var i = 0 ; i < icont.length ; i++) {
+        icont[i] = icont[i].trim();
+
+        if(icont[i] == ".DATA") {
+            i += 1;
+            for( ; i < icont.length ; i++) {
+                if(icont[i].length == 0)
+                    continue;
+                    
+                var labl = icont[i].slice(0, icont[i].indexOf(":"));
+                datasec[labl] = null;       //WIP
+            }
+        }
+        else {
+            var blabl = icont[i].search(":");
+            if(blabl != -1) {
+                cont.push(icont[i].slice(blabl+1));
+                blabl = icont[i].slice(0, blabl);
+                if(blabl.search(" ") != -1)
+                    return true;
+                
+                labs[blabl] = i;
+            }
+            else {
+                icont[i] = icont[i].toLowerCase();
+                remspace(icont[i]);              // removes extra spaces in the instructions
+                cont.push(icont[i]);
+            }
+        }
+    }
+
+    return false;
+}
+
+// Compiles a given program
+function processcont(tp){
     var dataprocessing = ['and', 'add', 'sub', 'rsb', 'adc', 'sbc', 'rsc', 'orr', 'eor', 'bic', 'clz', 'tst', 'teq']
     var dataprotworeg = ['mov', 'mvn', 'cmp', 'cmn']
     var memoryaccess = ['ldr', 'str', 'ldm', 'stm']
@@ -27,13 +64,22 @@ function processcont(tp){
     var controlflow = ['b', 'bl']
     var conditioncodes = ['eq', 'ne', 'cs', 'hs', 'cc', 'lo', 'mi', 'pl', 'vs', 'vc', 'hi', 'ls', 'ge', 'lt', 'gt', 'le', 'al', 'al', 'nv']
     
-    cont = cont.toLowerCase();      // change to lower case
-    cont = cont.split('\n');        // makes a list of instructions
-    remspace(cont);         // removes extra spaces in the instructions
-
     var error_flag = 0;         // indicates if there is a syntax error while compiling. Set to 1 if there is an error
     var i;
-    for(i = 0; i < cont.length; i++){
+    cont = window.cont;
+
+    if(preprocess()) {
+        error_flag = 1;
+        i = cont.length;
+    }
+    else {
+        i = 0;
+    }
+    
+    alert(JSON.stringify(datasec))
+    alert(JSON.stringify(labs))
+
+    for( ; i < cont.length; i++){
         var ins = '';  
         var regs = '';       
         var cc = undefined;
@@ -235,6 +281,14 @@ function processcont(tp){
     }  
     else{
         alert("No errors!");
+        var cont = document.getElementById("code").innerHTML;
+        var fcont = '';
+        cont = cont.split('\n');
+        for(x = 0 ; x < cont.length ; x++) {
+            fcont += cont[x] + "<br/>";
+        }
+
+        document.getElementById("code").innerHTML = fcont;
     }
 }
 
@@ -258,7 +312,7 @@ function checkdpregs(regs, categ){
     var grptwo = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])$/
     var grptwoimm = /^[r]([0-9]|1[0-5])[,]\s[#]([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-3][0-9][0-9][0-9]|[4][0][0-9][0-5])$/
     
-    var nooffset = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])$/
+    var nooffset = /^[r]([0-9]|1[0-5])[,]\s(\[[r]([0-9]|1[0-5])\]|[=]([a-z]|[A-Z]|_)(\w)*)$/
     var immorpreoffset = /^[r]([0-9]|1[0-5])[,]\s\[[r]([0-9]|1[0-5])[,]\s[#]\-?([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-3][0-9][0-9][0-9]|40[0-8][0-9]|409[0-5])\]!?$/
     var postind = /^[r]([0-9]|1[0-5])[,]\s\[[r]([0-9]|1[0-5])\][,]\s[#]\-?([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-3][0-9][0-9][0-9]|40[0-8][0-9]|409[0-5])?$/
 
