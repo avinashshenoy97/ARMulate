@@ -7,15 +7,30 @@ The application is written using web technologies and run using nw, formerly kno
 ##### Clone the repo :
 	git clone https://github.com/avinashshenoy97/ARMulate
 
-##### Get NW.js (built using v0.22.3)
-	https://nwjs.io/downloads/
+##### Get NW.js (built using `v0.22.3`)
+
+[NW Download Page](https://nwjs.io/downloads/)
+
+###### v0.22.3
+
+[macOS 64bit](https://dl.nwjs.io/v0.22.3/nwjs-v0.22.3-osx-x64.zip)
+
+[Windows 64bit](https://dl.nwjs.io/v0.22.3/nwjs-v0.22.3-win-x64.zip)
+
+[Windows 32bit](https://dl.nwjs.io/v0.22.3/nwjs-v0.22.3-win-ia32.zip)
+
+[Linux 64bit](https://dl.nwjs.io/v0.22.3/nwjs-v0.22.3-linux-x64.tar.gz)
+
+[Linux 32bit](https://dl.nwjs.io/v0.22.3/nwjs-v0.22.3-linux-ia32.tar.gz)
 
 ##### Run the app
 	cd /path/to/app/
 	/path/to/nw .
 
-/path/to/nw is the path to the binary file of NW.js.
+`/path/to/nw` is the path to the binary file of `NW.js`.
+
+On Mac, it's `nwjs.app/Contents/MacOS/nwjs`
+
+On Linux, it's `nw`;
 
 On Winodws, it's `nw.exe`;
-On Linux, it's `nw`;
-On Mac, it's `nwjs.app/Contents/MacOS/nwjs`
