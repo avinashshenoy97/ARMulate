@@ -29,7 +29,7 @@ function preprocess() {
             for( ; i < icont.length ; i++) {
                 if(icont[i].length == 0)
                     continue;
-                    
+
                 var labl = icont[i].slice(0, icont[i].indexOf(":"));
                 datasec[labl] = null;       //WIP
             }
@@ -37,7 +37,7 @@ function preprocess() {
         else {
             var blabl = icont[i].search(":");
             if(blabl != -1) {
-                cont.push(icont[i].slice(blabl+1));
+                cont.push(icont[i].slice(blabl+1).toLowerCase().trim());
                 blabl = icont[i].slice(0, blabl);
                 if(blabl.search(" ") != -1)
                     return true;
@@ -76,8 +76,9 @@ function processcont(tp){
         i = 0;
     }
     
-    alert(JSON.stringify(datasec))
-    alert(JSON.stringify(labs))
+    alert(cont)
+    //alert(JSON.stringify(datasec))
+    //alert(JSON.stringify(labs))
 
     for( ; i < cont.length; i++){
         var ins = '';  
@@ -112,9 +113,10 @@ function processcont(tp){
         //alert(ins);
         //alert(regs);
         if(j < dataprocessing.length){  // check if it is a data processing instruction
+            //alert('lo')
             if(ins.length > 3){         // check if the cpsr contents have to be set
                 conds = ins.slice(3);
-                alert(conds);   
+                //alert(conds);   
                 if(conds.length > 1){
                     if(conds[2] != 's'){    // check if 's' is the last character, if not, error
                         error_flag = 1;
@@ -233,12 +235,15 @@ function processcont(tp){
         if(ins.length > 2){             // check if opcode is B 
             opcode = ins.slice(0, 1);
         }
+        alert(error_flag + "  e")
         for(j = 0; j < controlflow.length; j++){   
             if(opcode == controlflow[j]){
                 break;
             }
         }
+        alert(error_flag + "  e1")
         if(j < controlflow.length){     // check if it is a control flow instruction
+            alert('hre')
             if(ins.length > 2){
                 conds = ins.slice(1);
                 for(k = 0; k < conditioncodes.length; k++){     // check the validity of the condition codes
