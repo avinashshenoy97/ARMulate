@@ -37,7 +37,18 @@ function processcont(tp){
         var ins = '';  
         var regs = '';       
         var cc = undefined;
-        for(j = 0; j < cont[i].length; j++){
+        for(k = 0; k < cont[i].length; k++){    // check for label
+            if(cont[i][k] == ':'){
+                break;
+            }
+        }
+        if(k < cont[i].length){
+            j = k + 2;
+        }
+        else{
+            j = 0;
+        }
+        for(j ; j < cont[i].length; j++){
             if(cont[i][j] == ' '){
                 break;
             }
@@ -52,23 +63,31 @@ function processcont(tp){
                 break;
             }
         }
+        //alert(ins);
+        //alert(regs);
         if(j < dataprocessing.length){  // check if it is a data processing instruction
             if(ins.length > 3){         // check if the cpsr contents have to be set
-                conds = ins.slice(3);   
-                if(conds.length > 2){
+                conds = ins.slice(3);
+                alert(conds);   
+                if(conds.length > 1){
                     if(conds[2] != 's'){    // check if 's' is the last character, if not, error
                         error_flag = 1;
                         break;
                     }
-                }
-                conds = conds.slice(0, 2);   // get the condition codes  
-                for(j = 0; j < conditioncodes.length; j++){
-                    if(conds == conditioncodes[j]){
+                    conds = conds.slice(0, 2);   // get the condition codes  
+                    for(j = 0; j < conditioncodes.length; j++){
+                        if(conds == conditioncodes[j]){
+                            break;
+                        }
+                    }
+                    if(j == conditioncodes.length){     // check the validity of the condition codes
+                        error_flag = 1;
                         break;
                     }
                 }
-                if(j == conditioncodes.length){     // check the validity of the condition codes
+                if(conds[0] != 's'){    // check if 's' is the last character, if not, error
                     error_flag = 1;
+                    //alert("SIGH");
                     break;
                 }
             }
@@ -165,6 +184,38 @@ function processcont(tp){
                 continue;       //move on to next instruction 
             }
         }
+        if(ins.length > 2){             // check if opcode is B 
+            opcode = ins.slice(0, 1);
+        }
+        for(j = 0; j < controlflow.length; j++){   
+            if(opcode == controlflow[j]){
+                break;
+            }
+        }
+        if(j < controlflow.length){     // check if it is a control flow instruction
+            if(ins.length > 2){
+                conds = ins.slice(1);
+                for(k = 0; k < conditioncodes.length; k++){     // check the validity of the condition codes
+                    if(conds == conditioncodes[i]){
+                        break;
+                    }
+                }
+                if(j == conditioncodes.length){
+                    error_flag = 1;
+                    break;
+                }
+            }
+            for(k = 0; k < cont.length; k++){
+                if(cont[k].indexOf(regs) != -1 && cont[k] != cont[i] && cont[k].indexOf(regs) < cont[k].indexOf(':')){   // check if branch address is valid
+                    //alert(cont[k]);
+                    break;
+                }
+            }
+            if(k == cont.length){
+                error_flag = 1;
+                break;
+            }
+        }
     }
 
     if(error_flag){
@@ -190,18 +241,22 @@ function processcont(tp){
 // Removes extra spaces in the list of instructions
 function remspace(cont){
     for(i = 0; i < cont.length; i++){
+        cont[i] = cont[i].replace(/\s+\:/g, ': ');
         cont[i] = cont[i].replace(/\,/g, ', ');
         cont[i] = cont[i].replace(/\s+\,/g, ', ');
         cont[i] =  cont[i].replace(/\s+/g, ' ').trim();
+        //alert(cont[i]);
     }
 }
 
 // Checks the validity of the registers in the register list
 function checkdpregs(regs, categ){
     var noshift = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])$/
+    var noshiftimm = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s[#]([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-3][0-9][0-9][0-9]|[4][0][0-9][0-5])$/
     var immshift = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s([l][s][lr]|[a][s][r])\s[#]([0-9]|[1-2][0-9]|3[0-1])$/
     var regshift = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s([l][s][lr]|[a][s][r])\s[r]([0-9]|1[0-5])$/
     var grptwo = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])$/
+    var grptwoimm = /^[r]([0-9]|1[0-5])[,]\s[#]([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-3][0-9][0-9][0-9]|[4][0][0-9][0-5])$/
     
     var nooffset = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])$/
     var immorpreoffset = /^[r]([0-9]|1[0-5])[,]\s\[[r]([0-9]|1[0-5])[,]\s[#]\-?([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-3][0-9][0-9][0-9]|40[0-8][0-9]|409[0-5])\]!?$/
@@ -213,6 +268,10 @@ function checkdpregs(regs, categ){
     case 0:                     // for 3 register instructions
         var noshiftval = noshift.exec(regs);
         if(noshiftval != null) {
+            return 0;
+        }
+        var noshiftimmval = noshiftimm.exec(regs); 
+        if(noshiftimmval != null) {
             return 0;
         }
         var immshiftval = immshift.exec(regs); 
@@ -227,7 +286,8 @@ function checkdpregs(regs, categ){
     
     case 1:        // for 2 register instructions
         var grptwoval = grptwo.exec(regs);
-        if(grptwoval != null){
+        var grptwoimmval = grptwoimm.exec(regs);
+        if(grptwoval != null || grptwoimmval != null){
             return 0;
         }
         return 1;
