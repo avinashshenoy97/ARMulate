@@ -4,6 +4,29 @@
 	<!--<link rel="stylesheet" type="text/css" href="style/bootstrap.min.css">
 		<link rel="stylesheet" type="text/css" href="style/bootstrap-grid.min.css"> -->
 	<link rel="stylesheet" type="text/css" href="style/index.css">
+	<script>
+		function refreshpage() {
+			var cont = document.getElementById("code");
+
+			if(cont.tagName == "DIV")
+				cont = cont.innerHTML;
+			else
+				cont = cont.value;
+
+			cont = cont.replace(/<br>/g, "\n");
+			cont = cont.replace(/<br\\>/g, "\n");
+			cont = cont.replace(/<span class=("|')error("|')>/g, "");
+			cont = cont.replace("</span>", "");
+
+			document.getElementById("code").remove();
+			var e = document.getElementById("editor");
+			e.appendChild(document.createElement("textarea"));
+			e = e.children[0];
+			e.id = "code";
+			e.style.width = (parseInt(document.getElementById("editor").style.width) - (8)) + "px";
+			e.value = cont;
+		}
+	</script>
 </head>
 
 <body onresize="location.reload()">
@@ -14,11 +37,29 @@
 		<img id = "interpret "src="resources/interpret.svg">
 		<img id = "compile" onclick = "processcont('0')" src="resources/compile.svg">
 		<img id = "run" onclick = "processcont('1')" src="resources/run.svg">
+		<img id = "refresh" onclick = "refreshpage()" src="resources/reload.svg">
 		<script src = "scripts/comprun.js"></script>
 	</div>
 	<div class="container" id="content">
 		<div id="rbank">
 			<table id="Rs">
+				<tbody></tbody>
+			</table>
+			<table id="cpsr">
+				<tbody>
+				<tr class="r1">
+					<td>N</td>
+					<td>C</td>
+					<td>Z</td>
+					<td>V</td>
+				</tr>
+				<tr class="r2">
+					<td id="nflag"></td>
+					<td id="cflag"></td>
+					<td id="zflag"></td>
+					<td id="vflag"></td>
+				</tr>
+				</tbody>
 			</table>
 		</div>
 		<div id="editor">

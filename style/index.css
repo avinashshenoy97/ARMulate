@@ -46,12 +46,17 @@ body {
 	float: right;
 }
 
-#editor > textarea {
+#code {
 	height: 100%;
 	width: 100%;
 	font-size: 1em;
 	resize: none;
 	overflow: scroll;
+	line-height: 125%;
+}
+
+.error {
+	background-color: red;
 }
 
 .col1 {
@@ -61,6 +66,18 @@ body {
 
 .col2 {
 	width: 75%;
+	border: 2px solid black;
+}
+
+#cpsr td {
+	width: 25%;
+}
+
+.r1 > td {
+	border: 2px solid black;
+}
+
+.r2 > td {
 	border: 2px solid black;
 }
 

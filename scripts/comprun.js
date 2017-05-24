@@ -1,14 +1,28 @@
 // Compiles a given program
 function processcont(tp){
+    var d = document.createElement("div");
+    var cont = document.getElementById('code').value    // get the code
+    d.innerHTML = cont;
+    d.id = "code";
+    d.style.backgroundColor = "Gainsboro";
+    d.style.fontWeight = "bold";
+    d.style.width = (parseInt(document.getElementById("editor").style.width) - (8)) + "px";
+    document.getElementById("code").remove();
+    document.getElementById("editor").appendChild(d);
+
     var dataprocessing = ['and', 'add', 'sub', 'rsb', 'adc', 'sbc', 'rsc', 'orr', 'eor', 'bic', 'clz', 'tst', 'teq']
     var dataprotworeg = ['mov', 'mvn', 'cmp', 'cmn']
-    var datatransfer = ['ldr', 'str', 'ldm', 'stm']
+    var memoryaccess = ['ldr', 'str', 'ldm', 'stm']
+    var mult_instr = ['mul', 'mla', 'mls']
+    var controlflow = ['b', 'bl']
     var conditioncodes = ['eq', 'ne', 'cs', 'hs', 'cc', 'lo', 'mi', 'pl', 'vs', 'vc', 'hi', 'ls', 'ge', 'lt', 'gt', 'le', 'al', 'al', 'nv']
-    var cont = document.getElementById('code').value    // get the code
+    
     cont = cont.toLowerCase();      // change to lower case
     cont = cont.split('\n');        // makes a list of instructions
     remspace(cont);         // removes extra spaces in the instructions
+
     var error_flag = 0;         // indicates if there is a syntax error while compiling. Set to 1 if there is an error
+    var i;
     for(i = 0; i < cont.length; i++){
         var ins = '';  
         var regs = '';       
@@ -44,14 +58,19 @@ function processcont(tp){
                 }
                 if(j == conditioncodes.length){     // check the validity of the condition codes
                     error_flag = 1;
+                    break;
                 }
             }
             error_flag = checkdpregs(regs, 0);
             if(error_flag){
                 break;
             }   
+            
+            //add code to execute instruction here (if tp)
+
+            continue;       //move on to next instruction
         }
-        for(j = 0; j < dataprocessing.length; j++){     
+        for(j = 0; j < dataprotworeg.length; j++){     
             if(opcode == dataprotworeg[j]){
                 break;
             }
@@ -66,11 +85,58 @@ function processcont(tp){
             error_flag = checkdpregs(regs, 1);
             if(error_flag){
                 break;
-            }  
+            }
+
+            //add code to execute instruction here (if tp)
+
+            continue;       //move on to next instruction  
+        }
+        for(j = 0; j < memoryaccess.length; j++){     
+            if(opcode == memoryaccess[j]){
+                break;
+            }
+        }
+        if(j < memoryaccess.length){  // check if it is a memory accessing instruction
+            if(j < 2) {
+                if(opcode.length > 4){
+                    if(typeof (conditioncodes.find(opcode.slide(3,5))) === 'undefined') {
+                        error_flag = 1;
+                        break;
+                    }
+                }
+                if(opcode.length == 4 || opcode.length == 6) {
+                    if(opcode.slice(-1) != 'b') {
+                        error_flag = 1;
+                        break;
+                    }
+                }
+            }
+
+            error_flag = checkdpregs(regs, 2);
+            if(error_flag){
+                break;
+            }
+
+            //add code to execute instruction here (if tp)
+
+            continue;       //move on to next instruction  
         }
     }
+    
     if(error_flag){
         alert("Syntax error!");
+        var cont = document.getElementById("code").innerHTML;
+        var fcont = '';
+        cont = cont.split('\n');
+        var sptext = "<span class='error'>";
+        for(x = 0 ; x < i ; x++) {
+            fcont += cont[x] + "<br/>";
+        }
+        fcont += sptext + cont[i] + "</span><br/>";
+        for(x = i+1 ; x < cont.length ; x++) {
+            fcont += cont[x] + "<br/>";
+        }
+        document.getElementById("code").innerHTML = fcont + "<br/>";
     }  
     else{
         alert("No errors!");
@@ -91,18 +157,45 @@ function checkdpregs(regs, categ){
     var immshift = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s([l][s][lr]|[a][s][r])\s[#]([0-9]|[1-2][0-9]|3[0-1])$/
     var regshift = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s([l][s][lr]|[a][s][r])\s[r]([0-9]|1[0-5])$/
     var grptwo = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])$/
-    if(categ == 0){                     // for 3 register instructions
+    
+    var nooffset = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])$/
+    var immorpreoffset = /^[r]([0-9]|1[0-5])[,]\s\[[r]([0-9]|1[0-5])[,]\s[#]\-?([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-3][0-9][0-9][0-9]|40[0-8][0-9]|409[0-5])\]!?$/
+    var postind = /^[r]([0-9]|1[0-5])[,]\s\[[r]([0-9]|1[0-5])\][,]\s[#]\-?([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-3][0-9][0-9][0-9]|40[0-8][0-9]|409[0-5])?$/
+
+    switch(categ) {
+    case 0:                     // for 3 register instructions
         var noshiftval = noshift.exec(regs);
+        if(noshiftval != null) {
+            return 0;
+        }
         var immshiftval = immshift.exec(regs); 
+        if(immshiftval != null) {
+            return 0;
+        }
         var regshiftval = regshift.exec(regs); 
-        if(noshiftval != null || immshiftval != null || regshiftval != null){
+        if(regshiftval != null) {
             return 0;
         }
         return 1;
-    }
-    else if(categ == 1){        // for 2 register instructions
+    
+    case 1:        // for 2 register instructions
         var grptwoval = grptwo.exec(regs);
         if(grptwoval != null){
+            return 0;
+        }
+        return 1;
+
+    case 2:         //for memory access
+        var nooffsetval = nooffset.exec(regs);
+        if(nooffsetval != null) {
+            return 0;
+        }
+        var immorpreoffset = immorpreoffset.exec(regs); 
+        if(immorpreoffset != null) {
+            return 0;
+        }
+        var postind = postind.exec(regs); 
+        if(postind != null) {
             return 0;
         }
         return 1;

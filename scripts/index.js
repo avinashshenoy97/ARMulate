@@ -15,12 +15,13 @@ var h = window.innerHeight - (8 * 2);
 d = document.getElementById("content");
 d.style.height = (h * 60 / 100) + "px";
 
-var tab = document.getElementById("Rs");
+var tab = document.getElementById("Rs").children[0];
 for(i = 0 ; i < 16 ; i++) {
 	r = document.createElement("tr");
 	r.appendChild(document.createElement("td"));
 	r.appendChild(document.createElement("td"));
 	r.firstChild.innerHTML = "R" + i;
+	r.children[1].id = "r" + i + "val";
 
 	r.children[0].className = "col1";
 	r.children[1].className = "col2";
@@ -28,9 +29,36 @@ for(i = 0 ; i < 16 ; i++) {
 	tab.appendChild(r);
 }
 
-t = document.getElementById("Rs").offsetHeight / 16;
+/*r = document.createElement("tr");
+r.appendChild(document.createElement("td"));
+r.appendChild(document.createElement("td"));
+r.appendChild(document.createElement("td"));
+r.appendChild(document.createElement("td"));
+r.children[0].innerHTML = "N";
+r.children[1].innerHTML = "C";
+r.children[2].innerHTML = "Z";
+r.children[3].innerHTML = "V";
+for(x = 0 ; x < r.children.length ; x++)
+	r.children[x].className = "cpsr";
+tab.appendChild(r);
+
+r = document.createElement("tr");
+r.appendChild(document.createElement("td"));
+r.appendChild(document.createElement("td"));
+r.appendChild(document.createElement("td"));
+r.appendChild(document.createElement("td"));
+for(x = 0 ; x < r.children.length ; x++)
+	r.children[x].className = "cpsr";
+tab.appendChild(r);*/
+
+t = document.getElementById("Rs").offsetHeight / 18;
 var tr = tab.children;
 for(x = 0 ; x < tr.length ; x++) {
+	tr[x].style.height = t + "px";
+}
+
+tr = document.getElementById("cpsr").children[0].children;
+for(x = 0 ; x < 2 ; x++) {
 	tr[x].style.height = t + "px";
 }
 
@@ -80,11 +108,13 @@ function appear(event) {
 		case 6:
 			d.innerHTML = "Run";
 			break;
+
+		case 7:
+			d.innerHTML = "Refresh";
+			break;
 	}
 
 	document.body.appendChild(d);
-	console.log(n);
-	console.log(d);
 }
 
 function disappear(event) {
