@@ -1,10 +1,36 @@
 var datasec = new Object();     //labels in data section
 var cont = [];
 var labs = new Object();        //labels in code(branch targets)
+var interpreter = new Object();
+
+
+//setup the interpreter object
+function setup_interpreter() {
+    interpreter = window.interpreter;
+    cont = window.cont;
+    datasec = window.datasec
+    labs = window.labs
+
+    interpreter["code"] = cont;     //all the code
+    interpreter["data"] = datasec;  //data section
+    interpreter["labels"] = labs;   //branch targets
+    interpreter["cline"] = 0;       //current line
+    interpreter["regvals"] = window.decreg;    //register values
+    interpreter["flags"] = window.flags;        //CPSR
+    interpreter["instate"] = window.instate;    //update UI with register values
+    interpreter["bindriver"] = window.bindriver;      //convert all registers to binary values
+    interpreter["hexdriver"] = window.hexdriver;      //convert all registers to hexadecimal values
+    interpreter["copier"] = window.copy;                //copy decimalregisters to registers
+    interpreter["deci"] = window.deci;                  //flags to indicate register content state
+    interpreter["bin"] = window.bin;
+    interpreter["hexa"] = window.hexa;
+}
 
 //preprocess
 function preprocess() {
     cont = window.cont;
+    datasec = window.datasec
+    labs = window.labs
     var d = document.getElementById("compile");
     d.style.display = "none";
     d = d.nextElementSibling;
@@ -96,11 +122,13 @@ function processcont(tp){
     var mult_instr = ['mul', 'mla', 'mls']
     var longmul_instr = ['umull', 'umlal', 'smull', 'smlal']
     var controlflow = ['bl', 'b']       //important : has to be arranged in descending order of length
-    var conditioncodes = ['eq', 'ne', 'cs', 'hs', 'cc', 'lo', 'mi', 'pl', 'vs', 'vc', 'hi', 'ls', 'ge', 'lt', 'gt', 'le', 'al', 'al', 'nv']
+    var conditioncodes = ['eq', 'ne', 'cs', 'hs', 'cc', 'lo', 'mi', 'pl', 'vs', 'vc', 'hi', 'ls', 'ge', 'lt', 'gt', 'le', 'al']
     
     var error_flag = 0;         // indicates if there is a syntax error while compiling. Set to 1 if there is an error
     var i;
     cont = window.cont;
+    datasec = window.datasec
+    labs = window.labs
 
     if(preprocess()) {
         error_flag = 1;
@@ -364,7 +392,7 @@ function processcont(tp){
             if(ins.length > opcode.length){
                 conds = ins.slice(-2);
                 for(k = 0; k < conditioncodes.length; k++){     // check the validity of the condition codes
-                    if(conds == conditioncodes[i]){
+                    if(conds == conditioncodes[k]){
                         break;
                     }
                 }
@@ -380,7 +408,7 @@ function processcont(tp){
                 }
             }
             if(labflag){
-                error_flag = 1;
+                error_flag = 1;alert("si " + regs)
                 break;
             }
         }
@@ -388,6 +416,10 @@ function processcont(tp){
 
     if(error_flag){
         alert("Syntax error!");
+        var btn = document.getElementById("run");
+        btn.style.display = "none";
+        btn.nextElementSibling.style.display = "inline";
+
         var cont = document.getElementById("code").innerHTML;
         var fcont = '';
         cont = cont.split('\n');
@@ -407,6 +439,8 @@ function processcont(tp){
         cont = cont.replace(/\n/g, "<br/>");
         document.getElementById("code").innerHTML = cont;
     }
+
+    setup_interpreter();
 }
 
 // Removes extra spaces in the list of instructions
@@ -508,4 +542,90 @@ function checkdpregs(regs, categ){
 
     }
     return 1;
+}
+
+function processconditions(cc) {
+    var conditioncodes = ['eq', 'ne', 'cs', 'hs', 'cc', 'lo', 'mi', 'pl', 'vs', 'vc', 'hi', 'ls', 'ge', 'lt', 'gt', 'le', 'al'];
+
+    var p = conditioncodes.findIndex(function(c) { return c == cc });
+
+    switch(p) {
+        case 0:     //eq
+            return Boolean(flags.z);   //if z = 1; return true
+        
+        case 1:     //ne
+            return !Boolean(flags.z);    //if z = 0; return true
+
+        case 2: case 3:     //cs or hs
+            return Boolean(flag.c);     //if c = 1; return true
+
+        case 4: case 5:     //cc or lo
+            return !Boolean(flag.c);    //if c = 0; return true
+
+        case 6:             //mi
+            return Boolean(flag.n);     //if n = 1; return true
+
+        case 7:             //pl
+            return (!Boolean(flag.n) || Boolean(flag.z));   //if n=0 or z=1; return true
+
+        case 8:             //vs
+            return Boolean(flag.v);     //if v=1; return true
+
+        case 9:             //vc
+            return !Boolean(flag.v);    //if v=0; return false
+
+        case 10:            //hi
+            return !Boolean(flag.n);     //if n=0; return true
+
+        case 11:            //ls
+            return (Boolean(flag.n) || Boolean(flag.z));    //if n=1 or z=1;
+
+        case 12:            //ge
+            return (!Boolean(flag.n) || Boolean(flag.z));   //if n=0 or z=1; return true
+
+        case 13:            //lt
+            return Boolean(flag.n);     //if n = 1; return true
+
+        case 14:            //gt
+            return !Boolean(flag.n);     //if n=0; return true
+
+        case 15:            //le
+            return (Boolean(flag.n) || Boolean(flag.z));    //if n=1 or z=1;
+
+        case 16:            //al
+            return true;
+    }
+
+    return undefined;
+}
+
+function interpret(line) {
+    var interpreter = window.interpreter;
+
+    //Identify, process and execute 
+    
+    //Data Processing
+    
+    //Memory Access
+
+    //Multiply
+
+    //Long Multiply
+
+    //Control Flow
+
+    if(interpreter.deci) {
+        interpreter.copier();
+        interpreter.instate();
+    }
+    else if(interpreter.bin) {
+        interpreter.copier();
+        interpreter.bindriver();
+        interpreter.instate();
+    }
+    else if(interpreter.hexa) {
+        interpreter.copier();
+        interpreter.hexdriver();
+        interpreter.instate();
+    }
 }

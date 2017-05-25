@@ -1,4 +1,5 @@
-var regvals = [];
+var regvals = [], decreg = [];
+var flags = new Object();
 var conv = new Object();
 for(var x = 0 ; x < 10 ; x++) {
 	conv[x] = (x + "");
@@ -19,6 +20,8 @@ conv["D"] = 13;
 conv["E"] = 14;
 conv["F"] = 15;
 
+flags["n"] = flags["c"] = flags["z"] = flags["v"] = 0;
+
 var deci = true, bin = false, hexa = false;
 
 /*function extend(n) {		//pad 0s to string or number to length 8
@@ -35,10 +38,25 @@ function concise(s) {		//un-pad 0s
 		n = n.slice(1);
 }*/
 
-function instate() {				//put regvals in regbank on UI
+function instate() {				//put regvals in regbank on UI and maintain decimal regvals
 	for(var x = 0 ; x < 16 ; x++) {
 		var d = document.getElementById("r" + x + "val");
 		d.innerHTML = (regvals[x]);
+		
+		if(deci) {
+			decreg[x] = regvals[x];
+		}
+		else if(bin) {
+			decreg[x] = todec(regvals[x], 2);
+		}
+		else if(hexa) {
+			decreg[x] = todec(regvals[x], 16);
+		}
+	}
+
+	for(var x in flags) {
+		var d = document.getElementById(x + "flag");
+		d.innerHTML = flags[x];
 	}
 }
 
@@ -98,7 +116,7 @@ function decdriver() {
 		btn.nextElementSibling.style.display = "none";	//enable the button
 
 		for(var x = 0 ; x < 16 ; x++) {
-			regvals[x] = todec(regvals[x], 16);
+			regvals[x] = todec(regvals[x].slice(2), 16);
 		}
 		instate();
 	}
@@ -118,7 +136,7 @@ function bindriver() {
 		btn.nextElementSibling.style.display = "none";	//enable the button
 
 		for(var x = 0 ; x < 16 ; x++) {
-			regvals[x] = todec(regvals[x], 16);
+			regvals[x] = todec(regvals[x].slice(2), 16);
 		}
 		deci = true;
 	}
@@ -162,13 +180,19 @@ function hexdriver() {
 		btn.nextElementSibling.style.display = "none";	//enable the button
 
 		for(var x = 0 ; x < 16 ; x++) {
-			regvals[x] = tobase(regvals[x], 16);
+			regvals[x] = "0x" + tobase(regvals[x], 16);
 		}
 		instate();
 	}
 
 	deci = bin = false;
 	hexa = true;
+}
+
+function copy() {
+	for(var x = 0 ; x < 16 ; x++) {
+		regvals[x] = decreg[x];
+	}
 }
 
 for(var x = 0 ; x < 16 ; x++)
