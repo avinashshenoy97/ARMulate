@@ -11,13 +11,23 @@ function preprocess() {
     d.style.display = "inline";
 
     var d = document.createElement("div");
+    var e = document.createElement("div");
+
     var icont = document.getElementById('code').value    // get the code
     d.innerHTML = icont;
     d.id = "code";
-    d.style.backgroundColor = "Gainsboro";
-    d.style.fontWeight = "bold";
-    d.style.width = (parseInt(document.getElementById("editor").style.width) - (8)) + "px";
+    e.id = "encode";
+
+    e.style.backgroundColor = d.style.backgroundColor = "Gainsboro";
+    e.style.fontWeight = d.style.fontWeight = "bold";
+    
+    var w = (parseInt(document.getElementById("editor").style.width) - (8));
+    d.style.width = (w * 75 / 100) + "px";
+    e.style.width = (w * 25 / 100) + "px";
+    e.style.height = "100%";
+    
     document.getElementById("code").remove();
+    document.getElementById("editor").appendChild(e);
     document.getElementById("editor").appendChild(d);
 
     var icont = icont.split('\n');        // makes a list of instructions
@@ -38,16 +48,17 @@ function preprocess() {
             var blabl = icont[i].search(":");
             if(blabl != -1) {
                 var ins = icont[i].slice(blabl+1).trim();
-                if(ins.search(/^(b|B)(l|L)?$/g) != -1) {
+                if(ins.search(/^bl?/gi) != -1) {
                     var t = ins.indexOf(" ");
                     ins = ins.slice(0, t).toLowerCase() + ins.slice(t);
                 }
                 else {
                     ins = ins.toLowerCase();
                 }
-                remspace(ins);
+
+                ins = remspace(ins);
                 cont.push(ins);
-                
+
                 blabl = icont[i].slice(0, blabl);
                 if(blabl.search(" ") != -1)
                     return true;
@@ -68,7 +79,7 @@ function preprocess() {
                         ins = ins.slice(0, t).toLowerCase() + ins.slice(t);
                     }
                 }
-                remspace(ins);
+                ins = remspace(ins);
                 cont.push(ins);
             }
         }
@@ -84,7 +95,7 @@ function processcont(tp){
     var memoryaccess = ['ldr', 'str', 'ldm', 'stm']
     var mult_instr = ['mul', 'mla', 'mls']
     var longmul_instr = ['umull', 'umlal', 'smull', 'smlal']
-    var controlflow = ['b', 'bl']
+    var controlflow = ['bl', 'b']       //important : has to be arranged in descending order of length
     var conditioncodes = ['eq', 'ne', 'cs', 'hs', 'cc', 'lo', 'mi', 'pl', 'vs', 'vc', 'hi', 'ls', 'ge', 'lt', 'gt', 'le', 'al', 'al', 'nv']
     
     var error_flag = 0;         // indicates if there is a syntax error while compiling. Set to 1 if there is an error
@@ -100,7 +111,7 @@ function processcont(tp){
     }
     
     alert(cont)
-    //alert("HELP" + error_flag);
+    alert("HELP" + error_flag);
     //alert(JSON.stringify(datasec))
     //alert(JSON.stringify(labs))
 
@@ -263,7 +274,6 @@ function processcont(tp){
             }
         }
         if(j < mult_instr.length){  // check if it is a multiply instruction
-            alert("xoxoxox " + opcode + " " + ins)
             if(ins.length == 6 || ins.length == 4) {
                 if(ins[3] != 's') {
                     error_flag = 1;
@@ -284,7 +294,7 @@ function processcont(tp){
                     break;
                 }
             }
-            alert(j);
+
             if(j < 1) {
                 error_flag = checkdpregs(regs, 4);
                 if(error_flag)
@@ -332,28 +342,34 @@ function processcont(tp){
             continue;
         }
 
-        if(ins.length > 2){             // check if opcode is B 
-            opcode = ins.slice(0, 1);
+        /*var t = null;
+        if((t = ins.match(/^bl?/gi)) !== null){             // check if opcode is B 
+            opcode = t;
         }
+        else {
+            error_flag = 1;
+            break;
+        }*/
 //        alert(error_flag + "  e")
         for(j = 0; j < controlflow.length; j++){   
-            if(opcode == controlflow[j]){
+            if(ins.search(controlflow[j]) != -1){       //if a controlflow instr is found
                 break;
             }
         }
         //alert(error_flag + "  e1")
         if(j < controlflow.length){     // check if it is a control flow instruction
+            opcode = controlflow[j];
             //alert('hre')
-            //alert(ins);
-            if(ins.length > 2){
-                conds = ins.slice(1);
+            alert("i " + ins + "; o " + opcode);
+            if(ins.length > opcode.length){
+                conds = ins.slice(-2);
                 for(k = 0; k < conditioncodes.length; k++){     // check the validity of the condition codes
                     if(conds == conditioncodes[i]){
                         break;
                     }
                 }
                 if(k == conditioncodes.length){
-                    error_flag = 1; alert(conds)
+                    error_flag = 1;
                     break;
                 }
             }
@@ -395,13 +411,12 @@ function processcont(tp){
 
 // Removes extra spaces in the list of instructions
 function remspace(cont){
-    for(i = 0; i < cont.length; i++){
-        cont[i] = cont[i].replace(/\s+\:/g, ': ');
-        cont[i] = cont[i].replace(/\,/g, ', ');
-        cont[i] = cont[i].replace(/\s+\,/g, ', ');
-        cont[i] =  cont[i].replace(/\s+/g, ' ').trim();
+    cont = cont.replace(/\s+\:/g, ': ');
+    cont = cont.replace(/\,/g, ', ');
+    cont = cont.replace(/\s+\,/g, ', ');
+    cont =  cont.replace(/\s+/g, ' ').trim();
         //alert(cont[i]);
-    }
+    return cont;
 }
 
 // Checks the validity of the registers in the register list

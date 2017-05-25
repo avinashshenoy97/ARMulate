@@ -65,6 +65,11 @@ body {
 	resize: none;
 	overflow: scroll;
 	line-height: 125%;
+	float: right;
+}
+
+#encode {
+	float: left;
 }
 
 .error {
