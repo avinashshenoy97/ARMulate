@@ -85,11 +85,13 @@ function preprocess() {
             var blabl = icont[i].search(":");
             if(blabl != -1) {
                 var ins = icont[i].slice(blabl+1).trim();
-                if(ins.search(/^bl^ic?/gi) != -1) {
+                if(ins.search(/^bl^(ic)?/gi) != -1) {
                     var t = ins.indexOf(" ");
                     ins = ins.slice(0, t).toLowerCase() + ins.slice(t);
                 }
                 else {
+                    //if(ins.length == 0)
+                        //continue;
                     ins = ins.toLowerCase();
                 }
 
@@ -133,15 +135,13 @@ function processcont(tp){
     var mult_instr = ['mul', 'mla', 'mls']
     var longmul_instr = ['umull', 'umlal', 'smull', 'smlal']
     var controlflow = ['bl', 'b']       //important : has to be arranged in descending order of length
-<<<<<<< HEAD
     var conditioncodes = ['eq', 'ne', 'cs', 'hs', 'cc', 'lo', 'mi', 'pl', 'vs', 'vc', 'hi', 'ls', 'ge', 'lt', 'gt', 'le', 'al']
     
-=======
     var conditioncodes = ['eq', 'ne', 'cs', 'hs', 'cc', 'lo', 'mi', 'pl', 'vs', 'vc', 'hi', 'ls', 'ge', 'lt', 'gt', 'le', 'al'];
     var swiins = ['0x00', '0x02', '0x011', '0x12', '0x13', '0x66', '0x68', '0x69', '0x6a', '0x6b', '0x6c', '0x6d'];
 
->>>>>>> c4e1bcc07ea3be3b985cc42e174fee51617f64d7
     var error_flag = 0;         // indicates if there is a syntax error while compiling. Set to 1 if there is an error
+    var error_msg = null;
     var i;
     cont = window.cont;
     datasec = window.datasec
@@ -149,16 +149,17 @@ function processcont(tp){
 
     if(preprocess()) {
         error_flag = 1;
+        error_msg = "Error in .DATA section.";
         i = cont.length;
     }
     else {
         i = 0;
     }
     
-    //alert(cont)
+    alert(cont)
     //alert("HELP" + error_flag);
     //alert(JSON.stringify(datasec))
-    //alert(JSON.stringify(labs))
+    alert(JSON.stringify(labs))
     alert(cont.length);
     for( ; i < cont.length; i++){
         //alert(cont[i] + '  ' + i + ' ' + cont.length);
@@ -201,6 +202,7 @@ function processcont(tp){
                     if(conds.length > 2){
                         if(conds[2] != 's'){    // check if 's' is the last character, if not, error
                             error_flag = 1;
+                            error_msg = "S bit error.";
                             break;
                         }
                     }
@@ -212,11 +214,13 @@ function processcont(tp){
                     }
                     if(j == conditioncodes.length){     // check the validity of the condition codes
                         error_flag = 1;
+                        error_msg = "Invalid condition codes.";
                         break;
                     }
                 }
                 else if(conds[0] != 's'){    // check if 's' is the last character, if not, error
                     error_flag = 1;
+                    error_msg = "S bit error.";
                     //alert("SIGH");
                     break;
                 }
@@ -225,6 +229,7 @@ function processcont(tp){
             if(error_flag){
                 alert(regs);
                 alert("HERE");
+                error_msg = "Invalid registers/location.";
                 break;
             }   
             
@@ -245,6 +250,7 @@ function processcont(tp){
                     if(conds.length > 2){
                         if(conds[2] != 's'){    // check if 's' is the last character, if not, error
                             error_flag = 1;
+                            error_msg = "S bit error.";
                             break;
                         }
                     }
@@ -256,17 +262,20 @@ function processcont(tp){
                     }
                     if(j == conditioncodes.length){     // check the validity of the condition codes
                         error_flag = 1;
+                        error_msg = "Invalid condition codes.";
                         break;
                     }
                 }
                 else if(conds[0] != 's'){    // check if 's' is the last character, if not, error
                     error_flag = 1;
+                    error_msg = "S bit error.";
                     //alert("SIGH");
                     break;
                 }
             }
             error_flag = checkdpregs(regs, 1);
             if(error_flag){
+                error_msg = "Invalid registers/location.";
                 break;
             }
 
@@ -285,18 +294,21 @@ function processcont(tp){
                     cc = ins.slide(3,5);
                     if(typeof (conditioncodes.find(function(c) {return c == cc})) === 'undefined') {
                         error_flag = 1;
+                        error_msg = "Invalid condition codes.";
                         break;
                     }
                 }
                 if(ins.length == 4 || ins.length == 6) {
                     if(ins.slice(-1) != 'b') {
                         error_flag = 1;
+                        error_msg = "Invalid size specification.";
                         break;
                     }
                 }
 
                 error_flag = checkdpregs(regs, 2);
                 if(error_flag){
+                    error_msg = "Invalid registers/location.";
                     break;
                 }
 
@@ -310,12 +322,14 @@ function processcont(tp){
                     cc = ins.slice(3,5);
                     if(typeof (conditioncodes.find(function(c) {return c == cc})) === 'undefined') {
                         error_flag = 1;
+                        error_msg = "Invalid condition codes.";
                         break;
                     }
 
                     mode = ins.slice(5,7);
                     if(typeof(modes.find(function(m) {return m == mode})) === 'undefined') {
                         error_flag = 1;
+                        error_msg = "Invalid mode.";
                         break;
                     }
                 }
@@ -323,12 +337,14 @@ function processcont(tp){
                     mode = ins.slice(3, 5); 
                     if(typeof(modes.find(function(m) {return m == mode})) === 'undefined') {
                         error_flag = 1;
+                        error_msg = "Invalid mode.";
                         break;
                     }
                 }
 
                 error_flag = checkdpregs(regs, 3);
                 if(error_flag){
+                    error_msg = "Invalid registers/location.";
                     break;
                 }
 
@@ -347,11 +363,13 @@ function processcont(tp){
             if(ins.length == 6 || ins.length == 4) {
                 if(ins[3] != 's') {
                     error_flag = 1;
+                    error_msg = "S bit error.";
                     break;
                 }
                 else {
                     if(ins[2] == 's') {
                         error_flag = 1;
+                        error_msg = "S bit error. MLS cannot have S bit.";
                         break;
                     }
                 }
@@ -361,19 +379,24 @@ function processcont(tp){
                 var cc = ins.slice(-2);
                 if(typeof (conditioncodes.find(function(c) {return c == cc})) === 'undefined') {
                     error_flag = 1;
+                    error_msg = "Invalid condition codes.";
                     break;
                 }
             }
 
             if(j < 1) {
                 error_flag = checkdpregs(regs, 4);
-                if(error_flag)
+                if(error_flag) {
+                    error_msg = "Invalid registers/location.";
                     break;
+                }
             }
             else {
                 error_flag = checkdpregs(regs, 5);
-                if(error_flag)
+                if(error_flag) {
+                    error_msg = "Invalid registers/location.";
                     break;
+                }
             }
 
             continue;
@@ -392,6 +415,7 @@ function processcont(tp){
             if(ins.length == 6 || ins.length == 8) {
                 if(ins[5] != 's') {
                     error_flag = 1;
+                    error_msg = "S bit error.";
                     break;
                 }
             }
@@ -400,13 +424,16 @@ function processcont(tp){
                 var cc = ins.slice(-2);
                 if(typeof (conditioncodes.find(function(c) {return c == cc})) === 'undefined') {
                     error_flag = 1;
+                    error_msg = "Invalid condition codes.";
                     break;
                 }
             }
 
             error_flag = checkdpregs(regs, 5);
-            if(error_flag)
+            if(error_flag) {
+                error_msg = "Invalid registers/location.";
                 break;
+            }
             
 
             continue;
@@ -425,6 +452,7 @@ function processcont(tp){
             }
             else if(regs.length > 10){
                 error_flag = 1;
+                error_msg = "Invalid interrupt.";
                 break;
             }
             else{
@@ -438,6 +466,7 @@ function processcont(tp){
                 }
                 if(swierr){
                     error_flag = 1;
+                    error_msg = "Invalid interrupt.";
                     break;
                 }
                 else{
@@ -453,6 +482,8 @@ function processcont(tp){
                     }
                 }
             }
+
+            continue;
         }
         //alert(ins + i);
         //alert(regs + i );
@@ -470,6 +501,7 @@ function processcont(tp){
         }
         else{
             error_flag = 1;
+            error_msg = "Invalid instruction.";
             break;
         }
         for(j = 0; j < controlflow.length; j++){
@@ -478,10 +510,6 @@ function processcont(tp){
             }
         }
         if(j < controlflow.length){     // check if it is a control flow instruction
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 45420f8c9581762e1d6325464d91624e4f09e2a6
-=======
             if(conds != ''){
                 for(k = 0; k < conditioncodes.length; k++){
                     if(conds == conditioncodes[k]){
@@ -489,8 +517,8 @@ function processcont(tp){
                     }
                 }
                 if(k == conditioncodes.length){
-                    error_flag == 1;
->>>>>>> c4e1bcc07ea3be3b985cc42e174fee51617f64d7
+                    error_flag = 1;
+                    error_msg = "Invalid condition codes.";
                     break;
                 }
             }
@@ -502,14 +530,26 @@ function processcont(tp){
             }
             if(labflag){
                 error_flag = 1;alert("si " + regs)
+                error_msg = "Invalid label.";
                 break;
             }
             //alert("DONE" + i + ' ' +cont[i]);
+            continue;
+        }
+
+        if(cont[i].length != 0) {
+            error_flag = 1;
+            error_msg = "Invalid instruction.";
+            break;
         }
     }
 
     if(error_flag){
-        alert("Syntax error!");
+        if(error_msg === null)
+            alert("Syntax error!");
+        else
+            alert(error_msg);
+
         var btn = document.getElementById("run");
         btn.style.display = "none";
         btn.nextElementSibling.style.display = "inline";
