@@ -295,6 +295,8 @@ function processcont(tp){
                 if(error_flag)
                     break;
             }
+
+            continue;
         }
 
         if(ins.length >= 5) {           //for long MUL/MLA
@@ -307,9 +309,28 @@ function processcont(tp){
         }
 
         if(j < longmul_instr.length) {
-            
-        }
+            if(ins.length == 6 || ins.length == 8) {
+                if(ins[5] != 's') {
+                    error_flag = 1;
+                    break;
+                }
+            }
 
+            if(ins.length >= 7) {
+                var cc = ins.slice(-2);
+                if(typeof (conditioncodes.find(function(c) {return c == cc})) === 'undefined') {
+                    error_flag = 1;
+                    break;
+                }
+            }
+
+            error_flag = checkdpregs(regs, 5);
+            if(error_flag)
+                break;
+            
+
+            continue;
+        }
 
         if(ins.length > 2){             // check if opcode is B 
             opcode = ins.slice(0, 1);
@@ -358,22 +379,17 @@ function processcont(tp){
         for(x = 0 ; x < i ; x++) {
             fcont += cont[x] + "<br/>";
         }
-        fcont += sptext + cont[i] + "</span><br/>";
+        fcont += sptext + cont[i] + "</span>";
         for(x = i+1 ; x < cont.length ; x++) {
-            fcont += cont[x] + "<br/>";
+            fcont += "<br/>" + cont[x];
         }
         document.getElementById("code").innerHTML = fcont;
     }  
     else{
         alert("No errors!");
         var cont = document.getElementById("code").innerHTML;
-        var fcont = '';
-        cont = cont.split('\n');
-        for(x = 0 ; x < cont.length ; x++) {
-            fcont += cont[x] + "<br/>";
-        }
-
-        document.getElementById("code").innerHTML = fcont;
+        cont = cont.replace(/\n/g, "<br/>");
+        document.getElementById("code").innerHTML = cont;
     }
 }
 
