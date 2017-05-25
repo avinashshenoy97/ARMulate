@@ -26,6 +26,10 @@ function setup_interpreter() {
     interpreter["hexa"] = window.hexa;
 }
 
+var conco = {'eq' : '0000', 'ne' : '0001', 'cs' : '0010', 'hs' : '0010', 'cc' : '0011', 'lo' : '0011', 'mi' : '0100', 'pl' : '0101', 'vs' : '0110', 'vc' : '0111', 'hi' : '1000', 'ls' : '1001', 'ge' : '1010', 'lt' : '1011', 'gt' : '1100', 'le' : '1101', 'al' : '1110', 'nv' : '1111'};
+var dpsco = {'and' : '0000', 'eor' : '0001', 'sub' : '0010', 'rsb' : '0011', 'add' : '0100', 'adc' : '0101', 'sbc' : '0110', 'rsc' : '0111', 'tst' : '1000', 'teq' : '1001', 'cmp' : '1010', 'cmn' : '1011', 'orr' : '1100', 'mov' : '1101', 'bic' : '1110', 'mvn' : '1111'};
+var mulco = {'mul' : '000', 'mla' : '001', 'umull' : '100', 'umlal' : '101', 'smull' : '110', 'smlal' : '111'};
+
 //preprocess
 function preprocess() {
     cont = window.cont;
@@ -138,8 +142,8 @@ function processcont(tp){
         i = 0;
     }
     
-    alert(cont)
-    alert("HELP" + error_flag);
+    //alert(cont)
+    //alert("HELP" + error_flag);
     //alert(JSON.stringify(datasec))
     //alert(JSON.stringify(labs))
 
@@ -391,8 +395,7 @@ function processcont(tp){
             }
         }
         if(j < controlflow.length){     // check if it is a control flow instruction
-<<<<<<< HEAD
->>>>>>> 45420f8c9581762e1d6325464d91624e4f09e2a6
+
                     break;
                 }
             }
@@ -459,6 +462,7 @@ function checkdpregs(regs, categ){
     var immshift = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s([l][s][lr]|[a][s][r])\s[#]([0-9]|[1-2][0-9]|3[0-1])$/
     var regshift = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s([l][s][lr]|[a][s][r])\s[r]([0-9]|1[0-5])$/
     var grptwo = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])$/
+    var grptwoshift = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s([l][s][lr]|[a][s][r])\s[#]([0-9]|[1-2][0-9]|3[0-1])$/
     var grptwoimm = /^[r]([0-9]|1[0-5])[,]\s[#]([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-3][0-9][0-9][0-9]|[4][0][0-9][0-5])$/
     
     var nooffset = /^[r]([0-9]|1[0-5])[,]\s(\[[r]([0-9]|1[0-5])\]|[=]([a-z]|[A-Z]|_)(\w)*)$/
@@ -491,8 +495,9 @@ function checkdpregs(regs, categ){
     
     case 1:        // for 2 register instructions
         var grptwoval = grptwo.exec(regs);
+        var grptwoshiftval = grptwoshift.exec(regs);
         var grptwoimmval = grptwoimm.exec(regs);
-        if(grptwoval != null || grptwoimmval != null){
+        if(grptwoval != null || grptwoimmval != null || grptwoshiftval != null){
             return 0;
         }
         return 1;
