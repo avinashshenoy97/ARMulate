@@ -82,7 +82,7 @@ function preprocess() {
             var blabl = icont[i].search(":");
             if(blabl != -1) {
                 var ins = icont[i].slice(blabl+1).trim();
-                if(ins.search(/^bl?/gi) != -1) {
+                if(ins.search(/^bl^ic?/gi) != -1) {
                     var t = ins.indexOf(" ");
                     ins = ins.slice(0, t).toLowerCase() + ins.slice(t);
                 }
@@ -190,9 +190,11 @@ function processcont(tp){
                 conds = ins.slice(3);
                 //alert(conds);   
                 if(conds.length > 1){
-                    if(conds[2] != 's'){    // check if 's' is the last character, if not, error
-                        error_flag = 1;
-                        break;
+                    if(conds.length > 2){
+                        if(conds[2] != 's'){    // check if 's' is the last character, if not, error
+                            error_flag = 1;
+                            break;
+                        }
                     }
                     conds = conds.slice(0, 2);   // get the condition codes  
                     for(j = 0; j < conditioncodes.length; j++){
@@ -205,7 +207,7 @@ function processcont(tp){
                         break;
                     }
                 }
-                if(conds[0] != 's'){    // check if 's' is the last character, if not, error
+                else if(conds[0] != 's'){    // check if 's' is the last character, if not, error
                     error_flag = 1;
                     //alert("SIGH");
                     break;
@@ -213,6 +215,8 @@ function processcont(tp){
             }
             error_flag = checkdpregs(regs, 0);
             if(error_flag){
+                alert(regs);
+                alert("HERE");
                 break;
             }   
             
@@ -226,9 +230,30 @@ function processcont(tp){
             }
         }
         if(j < dataprotworeg.length){  // check if it is a data processing instruction having 2 registers
-            if(ins.length > 3){        // check if cpsr contents have to be set
-                if(ins[3] != 's'){      
+            if(ins.length > 3){         // check if the cpsr contents have to be set
+                conds = ins.slice(3);
+                //alert(conds);   
+                if(conds.length > 1){
+                    if(conds.length > 2){
+                        if(conds[2] != 's'){    // check if 's' is the last character, if not, error
+                            error_flag = 1;
+                            break;
+                        }
+                    }
+                    conds = conds.slice(0, 2);   // get the condition codes  
+                    for(j = 0; j < conditioncodes.length; j++){
+                        if(conds == conditioncodes[j]){
+                            break;
+                        }
+                    }
+                    if(j == conditioncodes.length){     // check the validity of the condition codes
+                        error_flag = 1;
+                        break;
+                    }
+                }
+                else if(conds[0] != 's'){    // check if 's' is the last character, if not, error
                     error_flag = 1;
+                    //alert("SIGH");
                     break;
                 }
             }
@@ -520,6 +545,7 @@ function checkdpregs(regs, categ){
     var grptwo = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])$/
     var grptwoshift = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s([l][s][lr]|[a][s][r])\s[#]([0-9]|[1-2][0-9]|3[0-1])$/
     var grptwoimm = /^[r]([0-9]|1[0-5])[,]\s[#]([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-3][0-9][0-9][0-9]|[4][0][0-9][0-5])$/
+    var grptwolink = /^[p][c][,]\s[l][r]$/
     
     var nooffset = /^[r]([0-9]|1[0-5])[,]\s(\[[r]([0-9]|1[0-5])\]|[=]([a-z]|[A-Z]|_)(\w)*)$/
     var immorpreoffset = /^[r]([0-9]|1[0-5])[,]\s\[[r]([0-9]|1[0-5])[,]\s[#]\-?([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-3][0-9][0-9][0-9]|40[0-8][0-9]|409[0-5])\]!?$/
@@ -553,7 +579,8 @@ function checkdpregs(regs, categ){
         var grptwoval = grptwo.exec(regs);
         var grptwoshiftval = grptwoshift.exec(regs);
         var grptwoimmval = grptwoimm.exec(regs);
-        if(grptwoval != null || grptwoimmval != null || grptwoshiftval != null){
+        var grptwolinkval = grptwolink.exec(regs);
+        if(grptwoval != null || grptwoimmval != null || grptwoshiftval != null || grptwolinkval != null){
             return 0;
         }
         return 1;
