@@ -56,8 +56,10 @@ function processconditions(cc) {
 function interpret(line) {
     var interpreter = window.interpreter;
 
-    //Identify, process and execute 
+    //Identify, process and execute :-
     
+	//SWI
+	
     //Data Processing
     
     //Memory Access

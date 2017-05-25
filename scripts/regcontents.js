@@ -95,6 +95,10 @@ function tobase(n, base) {			//convert decimal to base
 }
 
 function decdriver() {
+	deci = window.deci;
+	bin = window.bin;
+	hexa = window.hexa;
+	
 	var btn = document.getElementById("dec");
 	btn.style.display = "none";
 	btn.nextElementSibling.style.display = "inline";	//disable the button
@@ -110,7 +114,7 @@ function decdriver() {
 		}
 		instate();
 	}
-	else if(hex) {
+	else if(hexa) {
 		var btn = document.getElementById("hex");
 		btn.style.display = "inline";
 		btn.nextElementSibling.style.display = "none";	//enable the button
@@ -126,11 +130,15 @@ function decdriver() {
 }
 
 function bindriver() {
+	deci = window.deci;
+	bin = window.bin;
+	hexa = window.hexa;
+	
 	var btn = document.getElementById("bin");
 	btn.style.display = "none";
 	btn.nextElementSibling.style.display = "inline";	//disable the button
 
-	if(hex) {
+	if(hexa) {
 		var btn = document.getElementById("hex");
 		btn.style.display = "inline";
 		btn.nextElementSibling.style.display = "none";	//enable the button
@@ -159,6 +167,10 @@ function bindriver() {
 }
 
 function hexdriver() {
+	deci = window.deci;
+	bin = window.bin;
+	hexa = window.hexa;
+	
 	var btn = document.getElementById("hex");
 	btn.style.display = "none";
 	btn.nextElementSibling.style.display = "inline";	//disable the button

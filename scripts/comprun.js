@@ -55,7 +55,7 @@ function preprocess() {
     e.style.fontWeight = d.style.fontWeight = "bold";
     
     var w = (parseInt(document.getElementById("editor").style.width) - (8));
-    d.style.width = (w * 75 / 100) + "px";
+    d.style.width = (w * 74 / 100) + "px";
     e.style.width = (w * 25 / 100) + "px";
     e.style.height = "100%";
     
