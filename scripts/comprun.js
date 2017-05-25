@@ -83,6 +83,7 @@ function processcont(tp){
     var dataprotworeg = ['mov', 'mvn', 'cmp', 'cmn']
     var memoryaccess = ['ldr', 'str', 'ldm', 'stm']
     var mult_instr = ['mul', 'mla', 'mls']
+    var longmul_instr = ['umull', 'umlal', 'smull', 'smlal']
     var controlflow = ['b', 'bl']
     var conditioncodes = ['eq', 'ne', 'cs', 'hs', 'cc', 'lo', 'mi', 'pl', 'vs', 'vc', 'hi', 'ls', 'ge', 'lt', 'gt', 'le', 'al', 'al', 'nv']
     
@@ -99,7 +100,7 @@ function processcont(tp){
     }
     
     alert(cont)
-    alert("HELP" + error_flag);
+    //alert("HELP" + error_flag);
     //alert(JSON.stringify(datasec))
     //alert(JSON.stringify(labs))
 
@@ -255,6 +256,61 @@ function processcont(tp){
                 continue;       //move on to next instruction 
             }
         }
+                                        //MULtiply
+        for(j = 0; j < mult_instr.length; j++){     
+            if(opcode == mult_instr[j]){
+                break;
+            }
+        }
+        if(j < mult_instr.length){  // check if it is a multiply instruction
+            alert("xoxoxox " + opcode + " " + ins)
+            if(ins.length == 6 || ins.length == 4) {
+                if(ins[3] != 's') {
+                    error_flag = 1;
+                    break;
+                }
+                else {
+                    if(ins[2] == 's') {
+                        error_flag = 1;
+                        break;
+                    }
+                }
+            }
+
+            if(ins.length >= 5) {
+                var cc = ins.slice(-2);
+                if(typeof (conditioncodes.find(function(c) {return c == cc})) === 'undefined') {
+                    error_flag = 1;
+                    break;
+                }
+            }
+            alert(j);
+            if(j < 1) {
+                error_flag = checkdpregs(regs, 4);
+                if(error_flag)
+                    break;
+            }
+            else {
+                error_flag = checkdpregs(regs, 5);
+                if(error_flag)
+                    break;
+            }
+        }
+
+        if(ins.length >= 5) {           //for long MUL/MLA
+            opcode = ins.slice(0, 5);
+        }
+        for(j = 0; j < longmul_instr.length; j++){   
+            if(opcode == longmul_instr[j]){
+                break;
+            }
+        }
+
+        if(j < longmul_instr.length) {
+            
+        }
+
+
         if(ins.length > 2){             // check if opcode is B 
             opcode = ins.slice(0, 1);
         }
@@ -276,7 +332,7 @@ function processcont(tp){
                     }
                 }
                 if(k == conditioncodes.length){
-                    error_flag = 1;
+                    error_flag = 1; alert(conds)
                     break;
                 }
             }
@@ -347,6 +403,8 @@ function checkdpregs(regs, categ){
 
     var mulreglist = /^[r]([0-9]|1[0-5])[,]\s\{(([r]([0-9]|1[0-5]))|([r]([0-9]|1[0-5])\-[r]([0-9]|1[0-5])))([,]\s(([r]([0-9]|1[0-5]))|([r]([0-9]|1[0-5])\-[r]([0-9]|1[0-5]))))*\}$/
 
+    var mla4reg = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])$/
+
     switch(categ) {
     case 0:                     // for 3 register instructions
         var noshiftval = noshift.exec(regs);
@@ -397,6 +455,25 @@ function checkdpregs(regs, categ){
         }
         return 1;
 
+    case 4:         //MUL
+        var mulinsval = noshift.exec(regs);
+        if(mulinsval != null) {
+            var r = regs.match(/1[0-5]|[0-9]/g);
+            if(r[0] == r[1])
+                return 1;
+            return 0;
+        }
+        return 1;
+
+    case 5:         //MLA with 4 reg
+        var mlainsval = mla4reg.exec(regs);
+        if(mlainsval != null) {
+            var r = regs.match(/1[0-5]|[0-9]/g);
+            if(r[0] == r[1])
+                return 1;
+            return 0;
+        }
+        return 1;
 
     }
     return 1;
