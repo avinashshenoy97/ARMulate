@@ -395,7 +395,8 @@ function processcont(tp){
             }
         }
         if(j < controlflow.length){     // check if it is a control flow instruction
-
+            for(k = 0; k < conditioncodes.length; k++){
+                if(conds == conditioncodes[k]){
                     break;
                 }
             }
@@ -410,7 +411,7 @@ function processcont(tp){
                 }
             }
             if(labflag){
-                error_flag = 1;alert("si " + regs)
+                error_flag = 1;
                 break;
             }
         }
