@@ -122,7 +122,7 @@ function disappear(event) {
 }
 
 d = document.getElementById("header").children;
-for(x = 0 ; x < d.length-1 ; x++) {
+for(x = 0 ; x < d.length-2 ; x++) {
 	d[x].addEventListener("mouseover", appear);
 	d[x].addEventListener("mouseout", disappear);
 }
