@@ -63,7 +63,11 @@ function preprocess() {
     var icont = icont.split('\n');        // makes a list of instructions
     for(var i = 0 ; i < icont.length ; i++) {
         icont[i] = icont[i].trim();
-
+        com = icont[i].search(';');
+        if(com != -1){
+            icont[i] = icont[i].slice(0, com);
+        }
+        //alert(icont[i]);
         if(icont[i] == ".DATA") {
             i += 1;
             for( ; i < icont.length ; i++) {
