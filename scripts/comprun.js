@@ -126,8 +126,9 @@ function processcont(tp){
     var mult_instr = ['mul', 'mla', 'mls']
     var longmul_instr = ['umull', 'umlal', 'smull', 'smlal']
     var controlflow = ['bl', 'b']       //important : has to be arranged in descending order of length
-    var conditioncodes = ['eq', 'ne', 'cs', 'hs', 'cc', 'lo', 'mi', 'pl', 'vs', 'vc', 'hi', 'ls', 'ge', 'lt', 'gt', 'le', 'al']
-    
+    var conditioncodes = ['eq', 'ne', 'cs', 'hs', 'cc', 'lo', 'mi', 'pl', 'vs', 'vc', 'hi', 'ls', 'ge', 'lt', 'gt', 'le', 'al'];
+    var swiins = ['0x00', '0x02', '0x011', '0x12', '0x13', '0x66', '0x68', '0x69', '0x6a', '0x6b', '0x6c', '0x6d'];
+
     var error_flag = 0;         // indicates if there is a syntax error while compiling. Set to 1 if there is an error
     var i;
     cont = window.cont;
@@ -146,8 +147,9 @@ function processcont(tp){
     //alert("HELP" + error_flag);
     //alert(JSON.stringify(datasec))
     //alert(JSON.stringify(labs))
-
+    alert(cont.length);
     for( ; i < cont.length; i++){
+        //alert(cont[i] + '  ' + i + ' ' + cont.length);
         var ins = '';  
         var regs = '';       
         var cc = undefined;
@@ -177,8 +179,7 @@ function processcont(tp){
                 break;
             }
         }
-        //alert(ins);
-        //alert(regs);
+        
         if(j < dataprocessing.length){  // check if it is a data processing instruction
             //alert('lo')
             if(ins.length > 3){         // check if the cpsr contents have to be set
@@ -373,6 +374,51 @@ function processcont(tp){
 
             continue;
         }
+        if(ins == 'swi'){
+            if(regs.length == 2){
+                for(k = 0; k < swiins.length; k++){
+                    if(regs == swiins[k]){
+                        break;
+                    }
+                }
+                if(k == swiins.length){
+                    error_flag == 1;
+                    break;
+                }
+            }
+            else if(regs.length > 10){
+                error_flag = 1;
+                break;
+            }
+            else{
+                swierr = 0;
+                nregs = regs.slice(0, 2);
+                for(k = 2; k < regs.length - 2; k++){
+                    if(regs[k] != '0'){
+                        swierr = 1;
+                        break;
+                    }
+                }
+                if(swierr){
+                    error_flag = 1;
+                    break;
+                }
+                else{
+                    nregs += regs.slice(k);
+                    for(k = 0; k < swiins.length; k++){
+                        if(regs == swiins[k]){
+                            break;
+                        }
+                    }
+                    if(k == swiins.length){
+                        error_flag == 1;
+                        break;
+                    }
+                }
+            }
+        }
+        //alert(ins + i);
+        //alert(regs + i );
         if(ins.length == 3){            // check for B
             opcode = ins.slice(0, 1);
             conds = ins.slice(1);
@@ -395,14 +441,16 @@ function processcont(tp){
             }
         }
         if(j < controlflow.length){     // check if it is a control flow instruction
-            for(k = 0; k < conditioncodes.length; k++){
-                if(conds == conditioncodes[k]){
+            if(conds != ''){
+                for(k = 0; k < conditioncodes.length; k++){
+                    if(conds == conditioncodes[k]){
+                        break;
+                    }
+                }
+                if(k == conditioncodes.length){
+                    error_flag == 1;
                     break;
                 }
-            }
-            if(k == conditioncodes.length){
-                error_flag == 1;
-                break;
             }
             labflag = 1;       // flag to check the validity of the label in the instruction
             for(key in labs){
@@ -414,6 +462,7 @@ function processcont(tp){
                 error_flag = 1;
                 break;
             }
+            //alert("DONE" + i + ' ' +cont[i]);
         }
     }
 
@@ -441,6 +490,8 @@ function processcont(tp){
         var cont = document.getElementById("code").innerHTML;
         cont = cont.replace(/\n/g, "<br/>");
         document.getElementById("code").innerHTML = cont;
+        //alert(cont);
+        //encode(cont);
     }
 
     setup_interpreter();
