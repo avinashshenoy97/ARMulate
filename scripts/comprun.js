@@ -392,22 +392,7 @@ function processcont(tp){
         }
         if(j < controlflow.length){     // check if it is a control flow instruction
 <<<<<<< HEAD
-            for(k = 0; k < conditioncodes.length; k++){
-                if(conds == conditioncodes[k]){
-=======
-            opcode = controlflow[j];
-            //alert('hre')
-            alert("i " + ins + "; o " + opcode);
-            if(ins.length > opcode.length){
-                conds = ins.slice(-2);
-                for(k = 0; k < conditioncodes.length; k++){     // check the validity of the condition codes
-                    if(conds == conditioncodes[k]){
-                        break;
-                    }
-                }
-                if(k == conditioncodes.length){
-                    error_flag = 1;
->>>>>>> Basic interpreter setup
+>>>>>>> 45420f8c9581762e1d6325464d91624e4f09e2a6
                     break;
                 }
             }
