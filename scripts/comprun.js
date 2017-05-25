@@ -369,37 +369,36 @@ function processcont(tp){
 
             continue;
         }
-
-        /*var t = null;
-        if((t = ins.match(/^bl?/gi)) !== null){             // check if opcode is B 
-            opcode = t;
+        if(ins.length == 3){            // check for B
+            opcode = ins.slice(0, 1);
+            conds = ins.slice(1);
         }
-        else {
+        else if(ins.length == 4){       //check for BL
+            opcode = ins.slice(0, 2);
+            conds = ins.slice(2);
+        }
+        else if(ins.length <= 2){
+            opcode = ins;
+            conds = '';
+        }
+        else{
             error_flag = 1;
             break;
-        }*/
-//        alert(error_flag + "  e")
-        for(j = 0; j < controlflow.length; j++){   
-            if(ins.search(controlflow[j]) != -1){       //if a controlflow instr is found
+        }
+        for(j = 0; j < controlflow.length; j++){
+            if(opcode == controlflow[j]){
                 break;
             }
         }
-        //alert(error_flag + "  e1")
         if(j < controlflow.length){     // check if it is a control flow instruction
-            opcode = controlflow[j];
-            //alert('hre')
-            alert("i " + ins + "; o " + opcode);
-            if(ins.length > opcode.length){
-                conds = ins.slice(-2);
-                for(k = 0; k < conditioncodes.length; k++){     // check the validity of the condition codes
-                    if(conds == conditioncodes[k]){
-                        break;
-                    }
-                }
-                if(k == conditioncodes.length){
-                    error_flag = 1;
+<<<<<<< HEAD
+>>>>>>> 45420f8c9581762e1d6325464d91624e4f09e2a6
                     break;
                 }
+            }
+            if(k == conditioncodes.length){
+                error_flag == 1;
+                break;
             }
             labflag = 1;       // flag to check the validity of the label in the instruction
             for(key in labs){
