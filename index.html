@@ -1,12 +1,21 @@
 <html>
 
 <head>
-	<!--<link rel="stylesheet" type="text/css" href="style/bootstrap.min.css">
-		<link rel="stylesheet" type="text/css" href="style/bootstrap-grid.min.css"> -->
 	<link rel="stylesheet" type="text/css" href="style/index.css">
+	<script src="scripts/memcontents.js"></script>
 	<script>
+		function setupMemory() {
+			mem = new Object()
+			mem.size = 16000;		//16 KB default
+		}
+
+		function setSize(n) {
+			window.mem.size = n;
+		}
+
 		function refreshpage() {
-			document.getElementById("encode").remove();
+			if(document.getElementById("encode"))
+				document.getElementById("encode").remove();
 			var d = document.getElementById("compile");
 			d.style.display = "inline";
 			d = d.nextElementSibling;
@@ -37,9 +46,16 @@
 			e.style.width = (parseInt(document.getElementById("editor").style.width) - (8)) + "px";
 			e.value = cont;
 
+			var tab = document.getElementById("data");
+			tab.appendChild(document.createElement("tbody"));
+			tab.children[0].remove();
+
 			window.datasec = new Object();
 			window.cont = [];
 			window.labs = new Object();
+
+			setupMemory();
+			instateMemory();
 		}
 	</script>
 </head>
@@ -59,8 +75,6 @@
 		<img id = "run" onclick = "" src="resources/run.svg" class="enab">
 		<img class = "dis" src="resources/run.svg">
 		<img id = "refresh" onclick = "refreshpage()" src="resources/reload.svg" class="enab">
-		<script src = "scripts/comprun.js"></script>
-		<script src = "scripts/interpreter.js"></script>
 	</div>
 	<div class="container" id="content">
 		<div id="rbank">
@@ -98,7 +112,12 @@
 
 	<script src="scripts/index.js"></script>
 	<script src="scripts/regcontents.js"></script>
-	<script src="scripts/memcontents.js"></script>
+	<script src = "scripts/comprun.js"></script>
+	<script src = "scripts/interpreter.js"></script>
+	<script>
+		setupMemory();
+		instateMemory();
+	</script>
 </body>
 
 </html>

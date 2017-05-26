@@ -77,6 +77,10 @@ body {
 	background-color: red;
 }
 
+.changed {
+	color: red;
+}
+
 .col1 {
 	font-weight: 500;
 	width: 25%;
