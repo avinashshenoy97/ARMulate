@@ -24,7 +24,7 @@ flags["n"] = flags["c"] = flags["z"] = flags["v"] = 0;
 
 var deci = true, bin = false, hexa = false;
 
-/*function extend(n) {		//pad 0s to string or number to length 8
+function extend(n) {		//pad 0s to string or number to length 8
 	var s = "" + n;
 	while(s.length != 8)
 		s = "0" + s;
@@ -36,22 +36,12 @@ function concise(s) {		//un-pad 0s
 	var n = s;
 	while(n[0] != "0" || n.length == 1)
 		n = n.slice(1);
-}*/
+}
 
 function instate() {				//put regvals in regbank on UI and maintain decimal regvals
 	for(var x = 0 ; x < 16 ; x++) {
 		var d = document.getElementById("r" + x + "val");
 		d.innerHTML = (regvals[x]);
-		
-		if(deci) {
-			decreg[x] = regvals[x];
-		}
-		else if(bin) {
-			decreg[x] = todec(regvals[x], 2);
-		}
-		else if(hexa) {
-			decreg[x] = todec(regvals[x], 16);
-		}
 	}
 
 	for(var x in flags) {
@@ -207,9 +197,26 @@ function copy() {
 	}
 }
 
+function decinstate() {				//put regvals in regbank on UI and maintain decimal regvals
+	for(var x = 0 ; x < 16 ; x++) {
+		if(deci) {
+			decreg[x] = regvals[x];
+		}
+		else if(bin) {
+			decreg[x] = todec(regvals[x], 2);
+		}
+		else if(hexa) {
+			decreg[x] = todec(regvals[x], 16);
+		}
+	}
+}
+
 for(var x = 0 ; x < 16 ; x++)
 	regvals[x] = 0;
 
+regvals[12] = 5000;
+
+decinstate();
 instate();
 
 document.getElementById("dec").addEventListener("click", decdriver, false);

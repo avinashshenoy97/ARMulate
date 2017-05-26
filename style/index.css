@@ -141,7 +141,8 @@ td {
 
 .memdata {
 	height: 20px;
-	overflow: scroll;
+	overflow: hidden;
+	width: 100%;
 	max-width: 100%;
 }
 

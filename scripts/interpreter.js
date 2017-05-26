@@ -1,12 +1,12 @@
 function processconditions(cc) {
     var conditioncodes = ['eq', 'ne', 'cs', 'hs', 'cc', 'lo', 'mi', 'pl', 'vs', 'vc', 'hi', 'ls', 'ge', 'lt', 'gt', 'le', 'al'];
 
-    var p = conditioncodes.findIndex(function(c) { return c == cc });
+    var p = conditioncodes.findIndex(function (c) { return c == cc });
 
-    switch(p) {
+    switch (p) {
         case 0:     //eq
             return Boolean(flags.z);   //if z = 1; return true
-        
+
         case 1:     //ne
             return !Boolean(flags.z);    //if z = 0; return true
 
@@ -53,15 +53,23 @@ function processconditions(cc) {
     return undefined;
 }
 
+var dataprocessing = ['and', 'add', 'sub', 'rsb', 'adc', 'sbc', 'rsc', 'orr', 'eor', 'bic', 'clz', 'tst', 'teq']
+var dataprotworeg = ['mov', 'mvn', 'cmp', 'cmn']
+var memoryaccess = ['ldr', 'str', 'ldm', 'stm']
+var mult_instr = ['mul', 'mla', 'mls']
+var longmul_instr = ['umull', 'umlal', 'smull', 'smlal']
+var controlflow = ['bl', 'b']       //important : has to be arranged in descending order of length
+var swiins = ['0x00', '0x02', '0x011', '0x12', '0x13', '0x66', '0x68', '0x69', '0x6a', '0x6b', '0x6c', '0x6d'];
+
 function interpret(line) {
     var interpreter = window.interpreter;
 
     //Identify, process and execute :-
-    
-	//SWI
-	
+
+    //SWI
+
     //Data Processing
-    
+
     //Memory Access
 
     //Multiply
@@ -70,18 +78,21 @@ function interpret(line) {
 
     //Control Flow
 
-    if(interpreter.deci) {
+    if (interpreter.deci) {
         interpreter.copier();
-        interpreter.instate();
     }
-    else if(interpreter.bin) {
+    else if (interpreter.bin) {
         interpreter.copier();
         interpreter.bindriver();
-        interpreter.instate();
     }
-    else if(interpreter.hexa) {
+    else if (interpreter.hexa) {
         interpreter.copier();
         interpreter.hexdriver();
-        interpreter.instate();
+    }
+}
+
+function run(lines) {
+    for (var i = 0; i < lines.length; i++) {
+        interpret(lines[i]);
     }
 }

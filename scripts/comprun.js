@@ -38,6 +38,8 @@ function preprocess() {
     cont = window.cont;
     datasec = window.datasec
     labs = window.labs
+    var mem = 10000;        //start storing from
+
     var d = document.getElementById("compile");
     d.style.display = "none";
     d = d.nextElementSibling;
@@ -74,11 +76,37 @@ function preprocess() {
         if(icont[i] == ".DATA") {
             i += 1;
             for( ; i < icont.length ; i++) {
+                icont[i].replace(/\s+/gi, " ");
                 if(icont[i].length == 0)
                     continue;
 
-                var labl = icont[i].slice(0, icont[i].indexOf(":"));
-                datasec[labl] = null;       //WIP
+                var ind = icont[i].indexOf(":");
+                var labl = icont[i].slice(0, ind);
+                datasec[labl] = mem;
+
+                if(icont[i][ind] == ' ') {
+                    ind = icont[i].indexOf(".");
+                    var d = icont[i].slice(ind).indexOf(" ");
+                    var type = icont[i].slice(ind, icont[i].slice(ind).indexOf(" ")).toLowerCase();
+                    var size = 8;
+                    if(type == ".asciz") {
+                        size *= 1;
+
+                    }
+                    else if(type == ".byte")
+                        size *= 1;
+                    else if(type == ".word")
+                        size *= 2;
+                    else if(type == ".halfword")
+                        size *= 4;
+                    else
+                        return true;
+                    
+                    //var 
+                }
+                else {
+                    return true;
+                }
             }
         }
         else {
@@ -135,10 +163,9 @@ function processcont(tp){
     var mult_instr = ['mul', 'mla', 'mls']
     var longmul_instr = ['umull', 'umlal', 'smull', 'smlal']
     var controlflow = ['bl', 'b']       //important : has to be arranged in descending order of length
+    var swiins = ['0x00', '0x02', '0x011', '0x12', '0x13', '0x66', '0x68', '0x69', '0x6a', '0x6b', '0x6c', '0x6d'];
     var conditioncodes = ['eq', 'ne', 'cs', 'hs', 'cc', 'lo', 'mi', 'pl', 'vs', 'vc', 'hi', 'ls', 'ge', 'lt', 'gt', 'le', 'al']
     
-    var conditioncodes = ['eq', 'ne', 'cs', 'hs', 'cc', 'lo', 'mi', 'pl', 'vs', 'vc', 'hi', 'ls', 'ge', 'lt', 'gt', 'le', 'al'];
-    var swiins = ['0x00', '0x02', '0x011', '0x12', '0x13', '0x66', '0x68', '0x69', '0x6a', '0x6b', '0x6c', '0x6d'];
 
     var error_flag = 0;         // indicates if there is a syntax error while compiling. Set to 1 if there is an error
     var error_msg = null;
