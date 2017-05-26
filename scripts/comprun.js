@@ -31,7 +31,7 @@ function setup_interpreter() {
 var conco = {'eq' : '0000', 'ne' : '0001', 'cs' : '0010', 'hs' : '0010', 'cc' : '0011', 'lo' : '0011', 'mi' : '0100', 'pl' : '0101', 'vs' : '0110', 'vc' : '0111', 'hi' : '1000', 'ls' : '1001', 'ge' : '1010', 'lt' : '1011', 'gt' : '1100', 'le' : '1101', 'al' : '1110', 'nv' : '1111'};
 var dpsco = {'and' : '0000', 'eor' : '0001', 'sub' : '0010', 'rsb' : '0011', 'add' : '0100', 'adc' : '0101', 'sbc' : '0110', 'rsc' : '0111', 'tst' : '1000', 'teq' : '1001', 'cmp' : '1010', 'cmn' : '1011', 'orr' : '1100', 'mov' : '1101', 'bic' : '1110', 'mvn' : '1111'};
 var mulco = {'mul' : '000', 'mla' : '001', 'umull' : '100', 'umlal' : '101', 'smull' : '110', 'smlal' : '111'};
-
+var shiftco = {'lsl' : '00', 'lsr' : '01', 'asr' : '10', 'ror' : '11'};
 
 //preprocess
 function preprocess() {
@@ -186,8 +186,9 @@ function processcont(tp){
     alert(cont)
     //alert("HELP" + error_flag);
     //alert(JSON.stringify(datasec))
-    alert(JSON.stringify(labs))
-    alert(cont.length);
+    //alert(JSON.stringify(labs))
+    //alert(cont.length);
+    //alert(cont.length);
     for( ; i < cont.length; i++){
         //alert(cont[i] + '  ' + i + ' ' + cont.length);
         var ins = '';  
@@ -596,11 +597,23 @@ function processcont(tp){
     }  
     else{
         alert("No errors!");
+        enc = encode(cont);
+        encds = '';
+        //alert(enc.length);
+        k = 0;
+        for(i = 0; i < cont.length; i++){
+            if(cont[i] == ''){
+                encds = '<center>' + encds + '</center>' 
+            }
+            else{
+                encds = '<center>' + encds + enc[k] + '</center>' 
+                k += 1;
+            }
+        }
         var cont = document.getElementById("code").innerHTML;
         cont = cont.replace(/\n/g, "<br/>");
         document.getElementById("code").innerHTML = cont;
-        //alert(cont);
-        //encode(cont);
+        document.getElementById("encode").innerHTML = encds;
     }
 
     setup_interpreter();
@@ -620,10 +633,10 @@ function remspace(cont){
 function checkdpregs(regs, categ){
     var noshift = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])$/
     var noshiftimm = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s[#]([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-3][0-9][0-9][0-9]|[4][0][0-9][0-5])$/
-    var immshift = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s([l][s][lr]|[a][s][r])\s[#]([0-9]|[1-2][0-9]|3[0-1])$/
-    var regshift = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s([l][s][lr]|[a][s][r])\s[r]([0-9]|1[0-5])$/
+    var immshift = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s([l][s][lr]|[a][s][r]|[r][o][r])\s[#]([0-9]|[1-2][0-9]|3[0-1])$/
+    var regshift = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s([l][s][lr]|[a][s][r]|[r][o][r])\s[r]([0-9]|1[0-5])$/
     var grptwo = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])$/
-    var grptwoshift = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s([l][s][lr]|[a][s][r])\s[#]([0-9]|[1-2][0-9]|3[0-1])$/
+    var grptwoshift = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s([l][s][lr]|[a][s][r]|[r][o][r])\s[#]([0-9]|[1-2][0-9]|3[0-1])$/
     var grptwoimm = /^[r]([0-9]|1[0-5])[,]\s[#]([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-3][0-9][0-9][0-9]|[4][0][0-9][0-5])$/
     var grptwolink = /^[p][c][,]\s[l][r]$/
     
@@ -709,6 +722,151 @@ function checkdpregs(regs, categ){
 
     }
     return 1;
+}
+
+function encode(cont){
+    alert("ENTER " + cont.length);
+    var encodes = [];
+    for(i = 0; i < cont.length; i++){
+        alert(i);
+        ins = cont[i].split(' ');
+        bin = ''
+        // check if it is a dataprocessing instruction with 3 registers
+        op = ins[0].slice(0, 3);
+        cond = ins[0].slice(3);
+        set_flg = 0;
+        imm_flg = 0;
+        //alert(op + cond);
+        for(k = 0; k < dataprocessing.length; k++){
+            if(op == dataprocessing[k]){
+                break;
+            }
+        }
+        
+        if(k < dataprocessing.length){
+            alert("HELLO");
+            if(cond.length >= 2){
+                cond_code = cond.slice(0, 2);
+                if(cond.slice(2) != ''){
+                    set_flg = 1;
+                }
+                bin = bin + conco[cond_code] + '00';
+            }
+            else if(cond.length == 1){
+                bin = bin + conco['al'] + '00';     // set to always if no condition is present
+                set_flg = 1;
+            }
+            else{
+                bin = bin + conco['al'] + '00';
+            }
+            if(ins[3].search('#') != -1){       // check if there is an immediate operand
+                imm_flg = 1;
+                bin += '1';
+            }
+            else{
+                bin += '0';
+            }
+            bin += dpsco[op];       // opcode
+            if(set_flg){
+                bin += '1';
+            }
+            else{
+                bin += '0';
+            }
+            bin += toBin(parseInt(ins[2].slice(1)), 4);    // first operand
+            bin += toBin(parseInt(ins[1].slice(1)), 4);     // destination operand
+            if(imm_flg){
+                bin += toBin(parseInt(ins[3].slice(1)), 12);     // second immediate operand
+            }
+            else if(ins.length > 4){
+                if(ins[5].search('#') != -1){       // immediate shift value
+                    bin = bin + toBin(parseInt(ins[5].slice(1)), 5) + shiftco[ins[4]] + '0' + toBin(parseInt(ins[3].slice(1)), 4);  
+                }
+                else{           // register shift value
+                    bin = bin + toBin(parseInt(ins[5].slice(1)), 4) + '0' + shiftco[ins[4]] + '1' + toBin(parseInt(ins[3].slice(1)), 4);
+                }
+            }
+            else{
+                bin = bin + '00000' + shiftco['lsl'] + '0' + toBin(parseInt(ins[3].slice(1)), 4);  
+            }
+            //alert(bin.length + ' ' + bin);
+            encodes.push(toHex(bin));   // add to the encodes array
+            alert("Add");
+            continue;
+        }
+        // check if it is a dataprocessing instruction with 2 registers
+        for(k = 0; k < dataprotworeg.length; k++){
+            if(op == dataprotworeg[k]){
+                break;
+            }
+        }
+        if(k < dataprotworeg.length){
+            if(cond.length >= 2){
+                cond_code = cond.slice(0, 2);
+                if(cond.slice(2) != ''){
+                    set_flg = 1;
+                }
+                bin = bin + conco[cond_code] + '00';
+            }
+            else if(cond.length == 1){
+                bin = bin + conco['al'] + '00';     // set to always if no condition is present
+                set_flg = 1;
+            }
+            else{
+                bin = bin + conco['al'] + '00';
+            }
+            if(ins[2].search('#') != -1){       // check if there is an immediate operand
+                imm_flg = 1;
+                bin += '1';
+            }
+            else{
+                bin += '0';
+            }
+            bin += dpsco[op];       // opcode
+            if(set_flg || op == 'cmp' || op == 'cmn'){
+                bin += '1';
+            }
+            else{
+                bin += '0';
+            }
+            bin += '0000';
+            bin += toBin(parseInt(ins[1].slice(1)), 4);     // destination operand
+            if(imm_flg){
+                bin += toBin(parseInt(ins[2].slice(1)), 12);     // second immediate operand
+            }
+            else if(ins.length > 3){
+                if(ins[4].search('#') != -1){       // immediate shift value
+                    bin = bin + toBin(parseInt(ins[4].slice(1)), 5) + shiftco[ins[3]] + '0' + toBin(parseInt(ins[2].slice(1)), 4);  
+                }
+                else{           // register shift value
+                    bin = bin + toBin(parseInt(ins[4].slice(1)), 4) + '0' + shiftco[ins[3]] + '1' + toBin(parseInt(ins[2].slice(1)), 4);
+                }
+            }
+            else{
+                bin += toBin(parseInt(ins[2].slice(1)), 12);     // second immediate operand
+            }
+            encodes.push(toHex(bin));   // add to the encodes array
+            alert("mov");
+            continue;
+        }
+    }
+
+    alert("RETURNING : " + encodes)
+    return encodes;
+}
+
+// function to convert a decimal number to binary correct upto the given number of bits
+function toBin(num, bits){
+    ret = num.toString(2);
+    while(ret.length < bits){
+        ret = '0' + ret;
+    }
+    return ret;
+}
+
+// function to convert a binary number to hexadecimal
+function toHex(bits){
+    return parseInt(bits, 2).toString(16).toUpperCase();
 }
 
 function processconditions(cc) {
