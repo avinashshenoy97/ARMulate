@@ -18,6 +18,7 @@ function setup_interpreter() {
     interpreter["regvals"] = window.decreg;    //register values
     interpreter["flags"] = window.flags;        //CPSR
     interpreter["instate"] = window.instate;    //update UI with register values
+    interpreter["memwrite"] = window.writeToMem;        //write to memory
     interpreter["bindriver"] = window.bindriver;      //convert all registers to binary values
     interpreter["hexdriver"] = window.hexdriver;      //convert all registers to hexadecimal values
     interpreter["copier"] = window.copy;                //copy decimalregisters to registers
@@ -38,7 +39,7 @@ function preprocess() {
     cont = window.cont;
     datasec = window.datasec
     labs = window.labs
-    var mem = 10000;        //start storing from
+    var memadd = 10000;        //start storing from
 
     var d = document.getElementById("compile");
     d.style.display = "none";
@@ -77,21 +78,33 @@ function preprocess() {
             i += 1;
             for( ; i < icont.length ; i++) {
                 icont[i].replace(/\s+/gi, " ");
+                icont[i].replace(/\s*\,\s*/gi, ",")
                 if(icont[i].length == 0)
                     continue;
 
                 var ind = icont[i].indexOf(":");
                 var labl = icont[i].slice(0, ind);
-                datasec[labl] = mem;
+                datasec[labl] = memadd;
 
-                if(icont[i][ind] == ' ') {
-                    ind = icont[i].indexOf(".");
-                    var d = icont[i].slice(ind).indexOf(" ");
-                    var type = icont[i].slice(ind, icont[i].slice(ind).indexOf(" ")).toLowerCase();
+                if(icont[i][ind+1] == ' ') {
+                    alert("hereee")
+                    ind = icont[i].indexOf("."); alert("ind " + ind)
+                    var d = icont[i].slice(ind).indexOf(" ") + ind; alert("d " + d)
+                    var type = icont[i].slice(ind, d).toLowerCase();
+                    alert(type)
                     var size = 8;
+                    var dat = icont[i].slice(d+1).split(",")
                     if(type == ".asciz") {
                         size *= 1;
-
+                        var dat = String(icont[i].match(/["]\w*["]/gi));
+                        alert("d " + dat + " " + typeof dat)
+                        //alert("w " + typeof writeToMem(0, 0));
+                        console.log(dat.charCodeAt(k))
+                        console.log(memadd)
+                        for(var k = 1 ; k < dat.length-1 ; k++) {
+                            writeToMem(dat.charCodeAt(k), memadd);
+                            memadd += size;
+                        }
                     }
                     else if(type == ".byte")
                         size *= 1;

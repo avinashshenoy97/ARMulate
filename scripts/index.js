@@ -109,8 +109,12 @@ function appear(event) {
 			d.innerHTML = "Run";
 			break;
 
-		case 13: case 14:
+		case 13:
 			d.innerHTML = "Refresh";
+			break;
+
+		case 14: case 15:
+			d.innerHTML = "Line in Memory";
 			break;
 	}
 
@@ -122,7 +126,7 @@ function disappear(event) {
 }
 
 d = document.getElementById("header").children;
-for(x = 0 ; x < d.length-2 ; x++) {
+for(x = 0 ; x < d.length ; x++) {
 	d[x].addEventListener("mouseover", appear);
 	d[x].addEventListener("mouseout", disappear);
 }

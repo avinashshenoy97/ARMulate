@@ -20,12 +20,21 @@ body {
 	overflow: scroll;
 }
 
-#header > img {
+#header > * {
 	border: 1px solid black;
 	height: 27px;
 	width: 27px;
 	margin: 0px 10px 0px 10px;
 	padding: 3px;
+	vertical-align: middle;
+}
+
+#goto {
+	padding: 8px 5px 8px 5px;
+}
+
+#goto > p {
+	display: none;
 }
 
 .dis {
@@ -75,6 +84,10 @@ body {
 
 .error {
 	background-color: red;
+}
+
+.changed {
+	color: red;
 }
 
 .col1 {
