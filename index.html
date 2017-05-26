@@ -57,6 +57,14 @@
 			setupMemory();
 			instateMemory();
 		}
+
+		function goto() {
+			var l = document.getElementById("gotoline").value;
+			l = Math.floor(l / mem.width) * (mem.width);
+			if(l != 0)
+				l -= mem.width;
+			document.getElementById("b" + l).scrollIntoView();
+		}
 	</script>
 </head>
 
@@ -75,6 +83,11 @@
 		<img id = "run" onclick = "" src="resources/run.svg" class="enab">
 		<img class = "dis" src="resources/run.svg">
 		<img id = "refresh" onclick = "refreshpage()" src="resources/reload.svg" class="enab">
+		<span id="goto">
+			<p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p></p>
+			<input type="text" id="gotoline">
+			<button onclick="goto()">Go To</button>
+		</span>
 	</div>
 	<div class="container" id="content">
 		<div id="rbank">

@@ -109,8 +109,12 @@ function appear(event) {
 			d.innerHTML = "Run";
 			break;
 
-		case 13: case 14:
+		case 13:
 			d.innerHTML = "Refresh";
+			break;
+
+		case 14: case 15:
+			d.innerHTML = "Line in Memory";
 			break;
 	}
 
