@@ -65,6 +65,11 @@
 				l -= mem.width;
 			document.getElementById("b" + l).scrollIntoView();
 		}
+
+		function scrollTogether(event) {
+			var d = document.getElementById("encode");
+			d.scrollTop = event.target.scrollTop;
+		}
 	</script>
 </head>
 

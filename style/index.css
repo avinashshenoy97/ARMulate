@@ -80,6 +80,9 @@ body {
 
 #encode {
 	float: left;
+	overflow: scroll;
+	line-height: 125%;
+	font-size: 1em;
 }
 
 .error {

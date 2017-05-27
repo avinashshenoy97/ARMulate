@@ -627,6 +627,7 @@ function processcont(tp){
         cont = cont.replace(/\n/g, "<br/>");
         document.getElementById("code").innerHTML = cont;
         document.getElementById("encode").innerHTML = encds;
+        document.getElementById("code").addEventListener("scroll", scrollTogether);
     }
 
     setup_interpreter();
