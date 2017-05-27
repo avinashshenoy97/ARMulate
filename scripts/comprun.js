@@ -173,7 +173,7 @@ function processcont(tp){
     var dataprocessing = ['and', 'add', 'sub', 'rsb', 'adc', 'sbc', 'rsc', 'orr', 'eor', 'bic', 'clz', 'tst', 'teq']
     var dataprotworeg = ['mov', 'mvn', 'cmp', 'cmn']
     var memoryaccess = ['ldr', 'str', 'ldm', 'stm']
-    var mult_instr = ['mul', 'mla', 'mls']
+    var mult_instr = ['mul', 'mla']
     var longmul_instr = ['umull', 'umlal', 'smull', 'smlal']
     var controlflow = ['bl', 'b']       //important : has to be arranged in descending order of length
     var swiins = ['0x00', '0x02', '0x011', '0x12', '0x13', '0x66', '0x68', '0x69', '0x6a', '0x6b', '0x6c', '0x6d'];
@@ -407,13 +407,13 @@ function processcont(tp){
                     error_msg = "S bit error.";
                     break;
                 }
-                else {
+                /*else {
                     if(ins[2] == 's') {
                         error_flag = 1;
                         error_msg = "S bit error. MLS cannot have S bit.";
                         break;
                     }
-                }
+                }*/
             }
 
             if(ins.length >= 5) {
