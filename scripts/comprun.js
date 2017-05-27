@@ -87,17 +87,17 @@ function preprocess() {
                 datasec[labl] = memadd;
 
                 if(icont[i][ind+1] == ' ') {
-                    alert("hereee")
+                    //alert("hereee")
                     ind = icont[i].indexOf("."); alert("ind " + ind)
                     var d = icont[i].slice(ind).indexOf(" ") + ind; alert("d " + d)
                     var type = icont[i].slice(ind, d).toLowerCase();
-                    alert(type)
+                    //alert(type)
                     var size = 8;
                     var dat = icont[i].slice(d+1).split(",")
                     if(type == ".asciz") {
                         size *= 1;
                         var dat = String(icont[i].match(/["]\w*["]/gi));
-                        alert("d " + dat + " " + typeof dat)
+                        //alert("d " + dat + " " + typeof dat)
                         //alert("w " + typeof writeToMem(0, 0));
                         console.log(dat.charCodeAt(k))
                         console.log(memadd)
@@ -196,7 +196,7 @@ function processcont(tp){
         i = 0;
     }
     
-    alert(cont)
+    //alert(cont)
     //alert("HELP" + error_flag);
     //alert(JSON.stringify(datasec))
     //alert(JSON.stringify(labs))
@@ -268,8 +268,8 @@ function processcont(tp){
             }
             error_flag = checkdpregs(regs, 0);
             if(error_flag){
-                alert(regs);
-                alert("HERE");
+                //alert(regs);
+                //alert("HERE");
                 error_msg = "Invalid registers/location.";
                 break;
             }   
@@ -738,10 +738,10 @@ function checkdpregs(regs, categ){
 }
 
 function encode(cont){
-    alert("ENTER " + cont.length);
+    //alert("ENTER " + cont.length);
     var encodes = [];
     for(i = 0; i < cont.length; i++){
-        alert(i);
+        //alert(i);
         ins = cont[i].split(' ');
         bin = ''
         // check if it is a dataprocessing instruction with 3 registers
@@ -757,7 +757,7 @@ function encode(cont){
         }
         
         if(k < dataprocessing.length){
-            alert("HELLO");
+            //alert("HELLO");
             if(cond.length >= 2){
                 cond_code = cond.slice(0, 2);
                 if(cond.slice(2) != ''){
@@ -804,7 +804,6 @@ function encode(cont){
             }
             //alert(bin.length + ' ' + bin);
             encodes.push(toHex(bin));   // add to the encodes array
-            alert("Add");
             continue;
         }
         // check if it is a dataprocessing instruction with 2 registers
@@ -859,12 +858,57 @@ function encode(cont){
                 bin += toBin(parseInt(ins[2].slice(1)), 12);     // second immediate operand
             }
             encodes.push(toHex(bin));   // add to the encodes array
-            alert("mov");
             continue;
+        }
+        // check if it is a multiply instruction (32bit)
+        for(k = 0; k < mult_instr.length; k++){
+            if(op == mult_instr[k]){
+                break;
+            }
+        }
+        if(k < mult_instr.length){
+            acc = 0;
+            if(cond.length >= 2){
+                cond_code = cond.slice(0, 2);
+                if(cond.slice(2) != ''){
+                    set_flg = 1;
+                }
+                bin = bin + conco[cond_code] + '000000';
+            }
+            else if(cond.length == 1){
+                bin = bin + conco['al'] + '000000';     // set to always if no condition is present
+                set_flg = 1;
+            }
+            else{
+                bin = bin + conco['al'] + '000000';
+            }
+            if(op == 'mla'){
+                acc = 1;
+                bin += '1';
+            }
+            else{
+                bin += '0';
+            }
+            if(set_flg){
+                bin += '1';
+            }
+            else{
+                bin += '0';
+            }
+            bin += toBin(parseInt(ins[1].slice(1)), 4);
+            if(acc){
+                bin += toBin(parseInt(ins[4].slice(1)), 4);
+            }
+            else{
+                bin += '0000';
+            }
+            bin = bin + toBin(parseInt(ins[3].slice(1)), 4) + '1001' + toBin(parseInt(ins[2].slice(1)), 4);
+            encodes.push(toHex(bin));   // add to the encodes array
+            //alert(encodes);
         }
     }
 
-    alert("RETURNING : " + encodes)
+    //alert("RETURNING : " + encodes)
     return encodes;
 }
 
