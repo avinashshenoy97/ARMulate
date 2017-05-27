@@ -402,7 +402,7 @@ function processcont(tp){
         }
         if(j < mult_instr.length){  // check if it is a multiply instruction
             if(ins.length == 6 || ins.length == 4) {
-                if(ins[3] != 's') {
+                if(ins.slice(-1) != 's') {
                     error_flag = 1;
                     error_msg = "S bit error.";
                     break;
@@ -417,7 +417,7 @@ function processcont(tp){
             }
 
             if(ins.length >= 5) {
-                var cc = ins.slice(-2);
+                var cc = ins.slice(3,5);
                 if(typeof (conditioncodes.find(function(c) {return c == cc})) === 'undefined') {
                     error_flag = 1;
                     error_msg = "Invalid condition codes.";
