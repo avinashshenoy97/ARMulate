@@ -1,4 +1,10 @@
 # ARMulate
+
+![Status](https://img.shields.io/badge/status-active-brightgreen.svg?style=flat)
+[![NW.js](https://img.shields.io/badge/NW.js-v0.22.3-blue.svg)](https://nwjs.io/)
+[![GitHub issues](https://img.shields.io/github/issues/avinashshenoy97/ARMulate.svg?style=flat)](https://github.com/avinashshenoy97/ARMulate/issues)
+[![License](https://img.shields.io/badge/license-mit-brightgreen.svg?style=flat)](https://github.com/avinashshenoy97/ARMulate/blob/master/LICENSE)
+
 Software that simulates the working of an ARM processor to a certain degree.
 
 The application is written using web technologies and run using nw, formerly known as node-webkit. It is based on `Chromium` and `node.js`.
