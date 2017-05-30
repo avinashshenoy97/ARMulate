@@ -3,6 +3,7 @@
 ![Status](https://img.shields.io/badge/status-active-brightgreen.svg?style=flat)
 [![NW.js](https://img.shields.io/badge/NW.js-v0.22.3-blue.svg)](https://nwjs.io/)
 [![GitHub issues](https://img.shields.io/github/issues/avinashshenoy97/ARMulate.svg?style=flat)](https://github.com/avinashshenoy97/ARMulate/issues)
+[![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)]()
 [![License](https://img.shields.io/badge/license-mit-brightgreen.svg?style=flat)](https://github.com/avinashshenoy97/ARMulate/blob/master/LICENSE)
 
 Software that simulates the working of an ARM processor to a certain degree.
