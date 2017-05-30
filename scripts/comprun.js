@@ -905,7 +905,138 @@ function encode(cont){
             }
             bin = bin + toBin(parseInt(ins[3].slice(1)), 4) + '1001' + toBin(parseInt(ins[2].slice(1)), 4);
             encodes.push(toHex(bin));   // add to the encodes array
+            continue;
             //alert(encodes);
+        }
+        for(k = 0; k < memoryaccess.length; k++){
+            if(op == memoryaccess[k]){
+                break;
+            }
+        }
+        if(k < memoryaccess.length){
+            pre_flg = 0;
+            zer_flg = 0;
+            if(op == 'ldr' || op == 'str'){
+                if(cond.length == 2){
+                    bin = bin + conco[cond_code] + '01';
+                }
+                else{
+                    bin = bin + conco['al'] + '01';
+                }
+                if(cont[i].search('#') != -1){
+                    bin += '0';
+                }
+                else{
+                    bin += '1';
+                }
+                if(ins.length == 4 && ins[3].search(']') != -1){
+                    pre_flg = 1;
+                    bin += '1';
+                }
+                else if(ins.length == 4 && ins[3].search(']') == -1 ){
+                    bin += '0';
+                }
+                else{
+                    zer_flg = 1;
+                    bin += '1';
+                }
+                if(zer_flg){
+                    binarr = [];
+                    for(j = 0; j < bin.length; j++){
+                        binarr.push(bin[j]);
+                    }
+                    binarr[6] = '0';
+                    bin = '';
+                    for(j = 0; j < binarr.length; j++){
+                        bin += binarr[j];
+                    }
+                }
+                if(cont[i].search('-') != -1){
+                    bin += '0';
+                }
+                else{
+                    bin += '1';
+                }
+                if(ins[0].search('b') != -1){
+                    bin += '1';
+                }
+                else{
+                    bin += '0';
+                }
+                if(cont[i].search('!') != -1){
+                    bin += '1';
+                }
+                else{
+                    bin += '0';
+                }
+                if(op == 'ldr'){
+                    bin += '1';
+                }
+                else{
+                    bin += '0';
+                }
+                bin = bin + toBin(parseInt(ins[2].slice(2)), 4) + toBin(parseInt(ins[1].slice(1)), 4);
+                if(pre_flg){
+                    hash_ind = ins[3].search('#');
+                    if(hash_ind == -1){
+                        bin = bin + toBin(parseInt(ins[3].slice(1)), 12);
+                    }
+                    else{
+                        bin = bin + toBin(parseInt(ins[3].slice(1)), 12);
+                    }
+                }
+                else if(zer_flg){
+                    bin = bin + toBin(parseInt('0'), 12);
+                }
+                else{
+                    bin = bin + toBin(parseInt(ins[3].slice(1)), 12);
+                }
+                encodes.push(toHex(bin));   // add to the encodes array
+                continue;
+            }
+        }
+        op = ins[0].slice(0, 5);
+        cond = ins[0].slice(5);
+        for(k = 0; k < longmul_instr.length; k++){
+            if(op == longmul_instr[k]){
+                break;
+            }
+        }
+        if(k < longmul_instr.length){
+            if(cond.length >= 2){
+                cond_code = cond.slice(0, 2);
+                if(cond.slice(2) != ''){
+                    set_flg = 1;
+                }
+                bin = bin + conco[cond_code] + '00001';
+            }
+            else if(cond.length == 1){
+                bin = bin + conco['al'] + '00001';     // set to always if no condition is present
+                set_flg = 1;
+            }
+            else{
+                bin = bin + conco['al'] + '00001';
+            }
+            if(op[0] == 'u'){
+                bin += '0';
+            }
+            else{
+                bin += '1';
+            }
+            if(op[3] == 'a'){
+                bin += '1';
+            }
+            else{
+                bin += '0';
+            }
+            if(set_flg){
+                bin += '1';
+            }
+            else{
+                bin += '0';
+            }
+            bin = bin + toBin(parseInt(ins[2].slice(1)), 4) + toBin(parseInt(ins[1].slice(1)), 4) + toBin(parseInt(ins[4].slice(1)), 4) + '1001' + toBin(parseInt(ins[3].slice(1)), 4);
+            encodes.push(toHex(bin));   // add to the encodes array
         }
     }
 
@@ -920,6 +1051,16 @@ function toBin(num, bits){
         ret = '0' + ret;
     }
     return ret;
+}
+
+function rsearchAll(str){
+    var rcount = 0;
+    for(p = 0; p < str.length; p++){
+        if(str[p] == 'r'){
+            rcount += 1;
+        }
+    }
+    return rcount;
 }
 
 // function to convert a binary number to hexadecimal
