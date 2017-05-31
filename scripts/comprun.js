@@ -479,8 +479,18 @@ function processcont(tp){
 
             continue;
         }
-        if(ins == 'swi'){
-            if(regs.length == 2){
+        if(ins.slice(0, 3) == 'swi'){
+            conds = ins.slice(3);
+            for(k = 0; k < conditioncodes.length; k++){
+                if(conds == conditioncodes[k]){
+                    break;
+                }
+            }
+            if(k == conditioncodes.length){
+                error_flag = 1;
+                error_msg = 'Invalid condition code.'
+            }
+            if(regs.length == 4){
                 for(k = 0; k < swiins.length; k++){
                     if(regs == swiins[k]){
                         break;
