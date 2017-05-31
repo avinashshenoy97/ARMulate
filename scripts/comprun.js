@@ -1125,16 +1125,6 @@ function toBin(num, bits){
     return ret;
 }
 
-function rsearchAll(str){
-    var rcount = 0;
-    for(p = 0; p < str.length; p++){
-        if(str[p] == 'r'){
-            rcount += 1;
-        }
-    }
-    return rcount;
-}
-
 // function to convert a binary number to hexadecimal
 function toHex(bits){
     ret = parseInt(bits, 2).toString(16).toUpperCase();
