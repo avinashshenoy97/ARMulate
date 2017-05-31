@@ -523,7 +523,6 @@ function processcont(tp){
                     }
                 }
             }
-
             continue;
         }
         //alert(ins + i);
@@ -1108,6 +1107,19 @@ function encode(cont){
                 bin += '0';
             }
             bin = bin + toBin(parseInt(ins[2].slice(1)), 4) + toBin(parseInt(ins[1].slice(1)), 4) + toBin(parseInt(ins[4].slice(1)), 4) + '1001' + toBin(parseInt(ins[3].slice(1)), 4);
+            encodes.push(toHex(bin));   // add to the encodes array
+        }
+        if(ins[0].slice(0, 3) == 'swi'){
+            cond = ins[0].slice(3);
+            if(cond.length == 2){
+                bin = bin + conco[cond] + '1111';
+            }
+            else{
+                bin = bin + conco['al'] + '1111';
+            }
+            x_ind = ins[1].search('x');
+            hex_num = ins[1].slice(x_ind + 1);
+            bin = bin + toBin(parseInt(hex_num, 16), 24);
             encodes.push(toHex(bin));   // add to the encodes array
         }
     }
