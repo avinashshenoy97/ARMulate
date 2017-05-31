@@ -330,10 +330,9 @@ function processcont(tp){
             }
         }
         if(j < memoryaccess.length){  // check if it is a memory accessing instruction
-            alert("lol")
             if(j < 2) {
                 if(ins.length > 4){
-                    cc = ins.slide(3,5);
+                    cc = ins.slice(3,5);
                     if(typeof (conditioncodes.find(function(c) {return c == cc})) === 'undefined') {
                         error_flag = 1;
                         error_msg = "Invalid condition codes.";
