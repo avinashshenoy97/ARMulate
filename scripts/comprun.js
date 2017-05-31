@@ -917,8 +917,10 @@ function encode(cont){
             pre_flg = 0;
             zer_flg = 0;
             if(op == 'ldr' || op == 'str'){
+                alert(cond.length);
                 if(cond.length == 2){
-                    bin = bin + conco[cond_code] + '01';
+                    bin = bin + conco[cond] + '01';
+                    alert(bin);
                 }
                 else{
                     bin = bin + conco['al'] + '01';
@@ -1000,6 +1002,7 @@ function encode(cont){
                 if(cond.length == 4){
                     cond_code = cond.slice(0, 2);
                     modco = cond.slice(2);
+                    ins[0] = ins[0].slice(0, 3) + modco;
                     bin += conco[cond_code] + '100';
                     alert(bin);
                 }
@@ -1007,32 +1010,22 @@ function encode(cont){
                     modco = cond.slice(0);
                     bin += conco['al'] + '100';
                 }
-                if(modco.slice(1) == 'b' || modco == 'ed' || modco == 'ea' || modco == 'fa' || modco == 'fd'){
+                if(modco.slice(1) == 'b' || ins[0] == 'ldmed' || ins[0] == 'ldmea' || ins[0] == 'stmfa' || ins[0] == 'stmfd'){
                     bin += '1';
                 }
                 else{
                     bin += '0';
                 }
                 //alert(modco);
-                if(modco.slice(1) == 'a' || modco.slice(0, 1) == 'i'){
+                if(modco.slice(0, 1) == 'i' || ins[0] == 'ldmed' || ins[0] == 'ldmfd' || ins[0] == 'stmfd' || ins[0] == 'stmea'){
                     bin += '1';
                 }
                 else{
                     bin += '0';
                 }
                 //alert(bin);
-                for(j = 2; j < ins.length; j++){
-                    if(ins[j].search('15') != -1){
-                        break;
-                    }
-                }
-                if(j < ins.length){
-                    bin += '1';
-                }
-                else{
-                    bin += '0';
-                }
-                if(cont[i].search('#') != -1){
+                bin += '0';
+                if(cont[i].search('!') != -1){
                     bin += '1';
                 }
                 else{
@@ -1144,7 +1137,11 @@ function rsearchAll(str){
 
 // function to convert a binary number to hexadecimal
 function toHex(bits){
-    return parseInt(bits, 2).toString(16).toUpperCase();
+    ret = parseInt(bits, 2).toString(16).toUpperCase();
+    if(ret.length == 7){
+        ret = '0' + ret;
+    }
+    return ret;
 }
 
 function processconditions(cc) {
