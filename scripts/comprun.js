@@ -929,6 +929,7 @@ function encode(cont){
                 else{
                     bin += '1';
                 }
+                //alert(bin);
                 if(ins.length == 4 && ins[3].search(']') != -1){
                     pre_flg = 1;
                     bin += '1';
@@ -995,13 +996,15 @@ function encode(cont){
                 continue;
             }
             else{
+                alert(cond);
                 if(cond.length == 4){
                     cond_code = cond.slice(0, 2);
                     modco = cond.slice(2);
                     bin += conco[cond_code] + '100';
+                    alert(bin);
                 }
                 else{
-                    modco = cond.slice(2);
+                    modco = cond.slice(0);
                     bin += conco['al'] + '100';
                 }
                 if(modco.slice(1) == 'b' || modco == 'ed' || modco == 'ea' || modco == 'fa' || modco == 'fd'){
@@ -1010,13 +1013,65 @@ function encode(cont){
                 else{
                     bin += '0';
                 }
+                //alert(modco);
                 if(modco.slice(1) == 'a' || modco.slice(0, 1) == 'i'){
                     bin += '1';
                 }
                 else{
                     bin += '0';
                 }
-                
+                //alert(bin);
+                for(j = 2; j < ins.length; j++){
+                    if(ins[j].search('15') != -1){
+                        break;
+                    }
+                }
+                if(j < ins.length){
+                    bin += '1';
+                }
+                else{
+                    bin += '0';
+                }
+                if(cont[i].search('#') != -1){
+                    bin += '1';
+                }
+                else{
+                    bin += '0';
+                }
+                if(op == 'ldm'){
+                    bin += '1';
+                }
+                else{
+                    bin += '0';
+                }
+                bin += toBin(parseInt(ins[1].slice(1)), 4);
+                reg_list = ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0']
+                //alert(ins + ' ' +ins[2]);
+                for(j = 2; j < ins.length; j++){
+                    if(ins[j].search('-') != -1){
+                        min_ind = ins[j].search('-');
+                        lim = [0, 0];
+                        m = 0;
+                        for(u = 0; u < ins[j].length; u++){
+                            if(ins[j][u] == 'r'){
+                                lim[m] = parseInt(ins[j].slice(u + 1));
+                                m += 1;
+                            }
+                        }
+                        alert("LIMS : " + lim);
+                        for(u = lim[0]; u <= lim[1]; u++){
+                            reg_list[u] = '1';
+                        }
+                    }
+                    else{
+                        reg_list[parseInt(ins[j].slice(1))] = '1';
+                    }
+                }
+                for(j = reg_list.length - 1 ; j >= 0; j--){
+                    bin += reg_list[j];
+                }
+                encodes.push(toHex(bin));   // add to the encodes array
+                continue;
             }
         }
         op = ins[0].slice(0, 5);
