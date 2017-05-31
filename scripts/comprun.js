@@ -994,6 +994,30 @@ function encode(cont){
                 encodes.push(toHex(bin));   // add to the encodes array
                 continue;
             }
+            else{
+                if(cond.length == 4){
+                    cond_code = cond.slice(0, 2);
+                    modco = cond.slice(2);
+                    bin += conco[cond_code] + '100';
+                }
+                else{
+                    modco = cond.slice(2);
+                    bin += conco['al'] + '100';
+                }
+                if(modco.slice(1) == 'b' || modco == 'ed' || modco == 'ea' || modco == 'fa' || modco == 'fd'){
+                    bin += '1';
+                }
+                else{
+                    bin += '0';
+                }
+                if(modco.slice(1) == 'a' || modco.slice(0, 1) == 'i'){
+                    bin += '1';
+                }
+                else{
+                    bin += '0';
+                }
+                
+            }
         }
         op = ins[0].slice(0, 5);
         cond = ins[0].slice(5);
