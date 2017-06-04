@@ -619,6 +619,7 @@ function processcont(tp){
     }  
     else{
         alert("No errors!");
+        //alert(labs['L1']);
         enc = encode(cont);
         encds = '';
         //alert(enc.length);
@@ -1075,6 +1076,35 @@ function encode(cont){
                 encodes.push(toHex(bin));   // add to the encodes array
                 continue;
             }
+        }
+        if(ins[0].slice(0, 1) == 'b' || ins[0].slice(0, 2) == 'bl'){
+            if(ins[0].length == 4 || ins[0].length == 2){
+                cond = ins[0].slice(2);
+                if(cond != ''){
+                    bin = bin + conco[cond] + '1011'; 
+                }
+                else{
+                    bin = bin + conco['al'] + '1011';
+                }
+            }
+            else{
+                if(ins[0].length == 3){
+                    bin = bin + conco[ins[0].slice(1)] + '1010';
+                }
+                else{
+                    bin = bin + conco['al'] + '1010';
+                }
+            }
+            branch_offset = 0;
+            if(labs[ins[1]] > i){
+                branch_offset = labs[ins[1]] - i;
+            }
+            else{
+                branch_offset = i - labs[ins[1]];
+            }
+            bin += toBin(branch_offset, 24);
+            encodes.push(toHex(bin));
+            continue;
         }
         op = ins[0].slice(0, 5);
         cond = ins[0].slice(5);
