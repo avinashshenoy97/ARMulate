@@ -385,6 +385,45 @@ function interpret() {
                 }
                 window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
                 break;
+            case 'sbc':
+                dest = parseInt(ins[1].slice(1));
+                op_one = window.interpreter['regvals'][parseInt(ins[2].slice(1))];
+                op_two = parseInt(ins[3].slice(1));
+                if(ins[3].slice(0, 1) == 'r'){
+                    op_two = window.interpreter['regvals'][op_two];
+                }
+                window.interpreter['regvals'][dest] = op_one - op_two + window.interpreter['flags'].c - 1;
+                if(window.interpreter['regvals'][dest].toString(2).length > 32){
+                    extend = window.interpreter['regvals'][dest].toString(2).length - 32;
+                    window.interpreter['regvals'][dest] = window.interpreter['regvals'][dest].slice(extend);
+                    if(cond.length == 3 || cond.length == 1){
+                        window.interpreter['flags'].c = 1;
+                    }
+                }
+                else{
+                    if(cond.length == 3 || cond.length == 1){
+                        window.interpreter['flags'].c = 0;
+                    }
+                }
+                if(window.interpreter['regvals'][dest] == 0 && (cond.length == 3 || cond.length == 1)){
+                    window.interpreter['flags'].z = 1;
+                }
+                else{
+                    if(cond.length == 3 || cond.length == 1){
+                        window.interpreter['flags'].z = 0;
+                    }
+                }
+                if(cond.length == 3 || cond.length == 1){
+                    if(window.interpreter['regvals'][dest] < 0){
+                        window.interpreter['flags'].n = 1;
+                    }
+                    else{
+                        window.interpreter['flags'].n = 0;
+                    }
+                    window.interpreter['flags'].v = 0;
+                }
+                window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
+                break;  
         }
     }
 }
