@@ -233,14 +233,30 @@ function interpret() {
         switch(op){
             case 'add':
                 dest = parseInt(ins[1].slice(1));
-                op_one = parseInt(ins[2].slice(1));
-                op_twp = parseInt(ins[3].slice(1));
-                if(ins[3].search('#') != 1){
-                    regvals[dest] = regvals[op_one] + op_two
-                } 
-                else{
-                    regvals[dest] = regvals[op_one] + regvals[op_two]
+                op_one = window.interpreter['regvals'][parseInt(ins[2].slice(1))];
+                op_two = parseInt(ins[3].slice(1));
+                if(ins[3].slice(0, 1) == 'r'){
+                    op_two = window.interpreter['regvals'][op_two];
                 }
+                window.interpreter['regvals'][dest] = op_one + op_two;
+                if(window.interpreter['regvals'][dest].toString(2).length > 32){
+                    extend = window.interpreter['regvals'][dest].toString(2).length - 32;
+                    window.interpreter['regvals'][dest] = window.interpreter['regvals'][dest].slice(extend);
+                    window.interpreter['flags'].c = 1;
+                }
+                else{
+                    window.interpreter['flags'].c = 0;
+                }
+                if(window.interpreter['regvals'][dest] == 0){
+                    window.interpreter['flags'].z = 1;
+                }
+                else{
+                    window.interpreter['regvals'].z = 0;
+                }
+                window.interpreter['flags'].n = 0;
+                window.interpreter['flags'].v = 0;
+                window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
+                break; 
         }
     }
 }

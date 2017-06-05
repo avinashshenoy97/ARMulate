@@ -786,6 +786,7 @@ function encode(cont){
             else{
                 bin = bin + conco['al'] + '00';
             }
+            alert(bin);
             if(ins[3].search('#') != -1){       // check if there is an immediate operand
                 imm_flg = 1;
                 bin += '1';
@@ -793,6 +794,7 @@ function encode(cont){
             else{
                 bin += '0';
             }
+            alert(op);
             bin += dpsco[op];       // opcode
             if(set_flg){
                 bin += '1';
@@ -1183,7 +1185,7 @@ function toBin(num, bits){
 // function to convert a binary number to hexadecimal
 function toHex(bits){
     ret = parseInt(bits, 2).toString(16).toUpperCase();
-    if(ret.length == 7){
+    while(ret.length < 8){
         ret = '0' + ret;
     }
     return ret;
