@@ -786,7 +786,7 @@ function encode(cont){
             else{
                 bin = bin + conco['al'] + '00';
             }
-            alert(bin);
+            //alert(bin);
             if(ins[3].search('#') != -1){       // check if there is an immediate operand
                 imm_flg = 1;
                 bin += '1';
@@ -794,7 +794,7 @@ function encode(cont){
             else{
                 bin += '0';
             }
-            alert(op);
+            //alert(op);
             bin += dpsco[op];       // opcode
             if(set_flg){
                 bin += '1';
@@ -1013,13 +1013,13 @@ function encode(cont){
                 continue;
             }
             else{
-                alert(cond);
+                //alert(cond);
                 if(cond.length == 4){
                     cond_code = cond.slice(0, 2);
                     modco = cond.slice(2);
                     ins[0] = ins[0].slice(0, 3) + modco;
                     bin += conco[cond_code] + '100';
-                    alert(bin);
+                    //alert(bin);
                 }
                 else{
                     modco = cond.slice(0);

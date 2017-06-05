@@ -67,6 +67,11 @@ function interpret() {
     var op = ins[0].slice(0, 3);
     var cond = ins[0].slice(3);
     var cond_exec = 1;
+    pcval = (1024 + 4 * window.interpreter['cline']).toString(16);
+    while(pcval.length < 4){
+        pcval = '0' + pcval;
+    } 
+    window.interpreter['regvals'][15] = pcval;
     window.interpreter['cline'] += 1;
     if(cond != ''){
         if(cond.length > 2){
@@ -242,19 +247,27 @@ function interpret() {
                 if(window.interpreter['regvals'][dest].toString(2).length > 32){
                     extend = window.interpreter['regvals'][dest].toString(2).length - 32;
                     window.interpreter['regvals'][dest] = window.interpreter['regvals'][dest].slice(extend);
-                    window.interpreter['flags'].c = 1;
+                    if(cond.length == 3 || cond.length == 1){
+                        window.interpreter['flags'].c = 1;
+                    }
                 }
                 else{
-                    window.interpreter['flags'].c = 0;
+                    if(cond.length == 3 || cond.length == 1){
+                        window.interpreter['flags'].c = 0;
+                    }
                 }
-                if(window.interpreter['regvals'][dest] == 0){
+                if(window.interpreter['regvals'][dest] == 0 && (cond.length == 3 || cond.length == 1)){
                     window.interpreter['flags'].z = 1;
                 }
                 else{
-                    window.interpreter['regvals'].z = 0;
+                    if(cond.length == 3 || cond.length == 1){
+                        window.interpreter['flags'].z = 0;
+                    }
                 }
-                window.interpreter['flags'].n = 0;
-                window.interpreter['flags'].v = 0;
+                if(cond.length == 3 || cond.length == 1){
+                    window.interpreter['flags'].n = 0;
+                    window.interpreter['flags'].v = 0;
+                }
                 window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
                 break; 
         }
