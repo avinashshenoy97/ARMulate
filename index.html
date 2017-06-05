@@ -14,6 +14,7 @@
 		}
 
 		function refreshpage() {
+			instate(window.regvals, window.flags);
 			if(document.getElementById("encode"))
 				document.getElementById("encode").remove();
 			var d = document.getElementById("compile");
