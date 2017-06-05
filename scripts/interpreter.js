@@ -53,8 +53,8 @@ function processconditions(cc) {
     return undefined;
 }
 
-var dataprocessing = ['and', 'add', 'sub', 'rsb', 'adc', 'sbc', 'rsc', 'orr', 'eor', 'bic', 'clz', 'tst', 'teq']
-var dataprotworeg = ['mov', 'mvn', 'cmp', 'cmn']
+var dataprocessing = ['and', 'add', 'sub', 'rsb', 'adc', 'sbc', 'rsc', 'orr', 'eor', 'bic', 'tst', 'teq']
+var dataprotworeg = ['mov', 'mvn', 'cmp', 'cmn', 'clz']
 var memoryaccess = ['ldr', 'str', 'ldm', 'stm']
 var mult_instr = ['mul', 'mla', 'mls']
 var longmul_instr = ['umull', 'umlal', 'smull', 'smlal']

@@ -30,7 +30,7 @@ function setup_interpreter() {
 
 
 var conco = {'eq' : '0000', 'ne' : '0001', 'cs' : '0010', 'hs' : '0010', 'cc' : '0011', 'lo' : '0011', 'mi' : '0100', 'pl' : '0101', 'vs' : '0110', 'vc' : '0111', 'hi' : '1000', 'ls' : '1001', 'ge' : '1010', 'lt' : '1011', 'gt' : '1100', 'le' : '1101', 'al' : '1110', 'nv' : '1111'};
-var dpsco = {'and' : '0000', 'eor' : '0001', 'sub' : '0010', 'rsb' : '0011', 'add' : '0100', 'adc' : '0101', 'sbc' : '0110', 'rsc' : '0111', 'tst' : '1000', 'teq' : '1001', 'cmp' : '1010', 'cmn' : '1011', 'orr' : '1100', 'mov' : '1101', 'bic' : '1110', 'mvn' : '1111'};
+var dpsco = {'clz' : '1011', 'and' : '0000', 'eor' : '0001', 'sub' : '0010', 'rsb' : '0011', 'add' : '0100', 'adc' : '0101', 'sbc' : '0110', 'rsc' : '0111', 'tst' : '1000', 'teq' : '1001', 'cmp' : '1010', 'cmn' : '1011', 'orr' : '1100', 'mov' : '1101', 'bic' : '1110', 'mvn' : '1111'};
 var mulco = {'mul' : '000', 'mla' : '001', 'umull' : '100', 'umlal' : '101', 'smull' : '110', 'smlal' : '111'};
 var shiftco = {'lsl' : '00', 'lsr' : '01', 'asr' : '10', 'ror' : '11'};
 
@@ -170,8 +170,8 @@ function preprocess() {
 
 // Compiles a given program
 function processcont(tp){
-    var dataprocessing = ['and', 'add', 'sub', 'rsb', 'adc', 'sbc', 'rsc', 'orr', 'eor', 'bic', 'clz', 'tst', 'teq']
-    var dataprotworeg = ['mov', 'mvn', 'cmp', 'cmn']
+    var dataprocessing = ['and', 'add', 'sub', 'rsb', 'adc', 'sbc', 'rsc', 'orr', 'eor', 'bic', 'tst', 'teq']
+    var dataprotworeg = ['mov', 'mvn', 'cmp', 'cmn', 'clz']
     var memoryaccess = ['ldr', 'str', 'ldm', 'stm']
     var mult_instr = ['mul', 'mla']
     var longmul_instr = ['umull', 'umlal', 'smull', 'smlal']
@@ -763,7 +763,6 @@ function encode(cont){
         cond = ins[0].slice(3);
         set_flg = 0;
         imm_flg = 0;
-        //alert(op + cond);
         for(k = 0; k < dataprocessing.length; k++){
             if(op == dataprocessing[k]){
                 break;
@@ -851,14 +850,27 @@ function encode(cont){
                 bin += '0';
             }
             bin += dpsco[op];       // opcode
+            alert(dpsco[op]);
             if(set_flg || op == 'cmp' || op == 'cmn'){
                 bin += '1';
             }
             else{
                 bin += '0';
             }
-            bin += '0000';
+            if(op == 'clz'){
+                bin += '1111';
+            }
+            else{
+                bin += '0000';
+            }
             bin += toBin(parseInt(ins[1].slice(1)), 4);     // destination operand
+            if(op == 'clz'){
+                bin += '11110001'
+                bin += toBin(parseInt(ins[2].slice(1)), 4);
+                encodes.push(toHex(bin));   // add to the encodes array
+                alert(bin.length + ' ' + bin);
+                continue;    
+            }
             if(imm_flg){
                 bin += toBin(parseInt(ins[2].slice(1)), 12);     // second immediate operand
             }
