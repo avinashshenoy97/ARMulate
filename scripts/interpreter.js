@@ -243,6 +243,23 @@ function interpret() {
                 if(ins[3].slice(0, 1) == 'r'){
                     op_two = window.interpreter['regvals'][op_two];
                 }
+                if(ins.length > 4){
+                    shift_val = parseInt(ins[5].slice(1));
+                    if(ins[5].slice(0, 1) == 'r'){
+                        shift_val = window.interpreter['regvals'][shift_val];
+                    }
+                    switch(ins[4]){
+                        case 'lsl':
+                            op_two = op_two << shift_val;
+                            break;
+                        case 'lsr':
+                            op_two = op_two >> shift_val;
+                            break;
+                        case 'asr':
+                            op_two = op_two >> shift_val;
+                            break;
+                    }
+                }
                 window.interpreter['regvals'][dest] = op_one + op_two;
                 if(window.interpreter['regvals'][dest].toString(2).length > 32){
                     extend = window.interpreter['regvals'][dest].toString(2).length - 32;
@@ -276,6 +293,23 @@ function interpret() {
                 op_two = parseInt(ins[3].slice(1));
                 if(ins[3].slice(0, 1) == 'r'){
                     op_two = window.interpreter['regvals'][op_two];
+                }
+                if(ins.length > 4){
+                    shift_val = parseInt(ins[5].slice(1));
+                    if(ins[5].slice(0, 1) == 'r'){
+                        shift_val = window.interpreter['regvals'][shift_val];
+                    }
+                    switch(ins[4]){
+                        case 'lsl':
+                            op_two = op_two << shift_val;
+                            break;
+                        case 'lsr':
+                            op_two = op_two >> shift_val;
+                            break;
+                        case 'asr':
+                            op_two = op_two >> shift_val;
+                            break;
+                    }
                 }
                 window.interpreter['regvals'][dest] = op_one + op_two;
                 if(window.interpreter['flags'].c){
@@ -313,6 +347,23 @@ function interpret() {
                 op_two = parseInt(ins[3].slice(1));
                 if(ins[3].slice(0, 1) == 'r'){
                     op_two = window.interpreter['regvals'][op_two];
+                }
+                if(ins.length > 4){
+                    shift_val = parseInt(ins[5].slice(1));
+                    if(ins[5].slice(0, 1) == 'r'){
+                        shift_val = window.interpreter['regvals'][shift_val];
+                    }
+                    switch(ins[4]){
+                        case 'lsl':
+                            op_two = op_two << shift_val;
+                            break;
+                        case 'lsr':
+                            op_two = op_two >> shift_val;
+                            break;
+                        case 'asr':
+                            op_two = op_two >> shift_val;
+                            break;
+                    }
                 }
                 window.interpreter['regvals'][dest] = op_one - op_two;
                 if(window.interpreter['regvals'][dest].toString(2).length > 32){
@@ -353,6 +404,23 @@ function interpret() {
                 if(ins[3].slice(0, 1) == 'r'){
                     op_two = window.interpreter['regvals'][op_two];
                 }
+                if(ins.length > 4){
+                    shift_val = parseInt(ins[5].slice(1));
+                    if(ins[5].slice(0, 1) == 'r'){
+                        shift_val = window.interpreter['regvals'][shift_val];
+                    }
+                    switch(ins[4]){
+                        case 'lsl':
+                            op_two = op_two << shift_val;
+                            break;
+                        case 'lsr':
+                            op_two = op_two >> shift_val;
+                            break;
+                        case 'asr':
+                            op_two = op_two >> shift_val;
+                            break;
+                    }
+                }
                 window.interpreter['regvals'][dest] = op_two - op_one;
                 if(window.interpreter['regvals'][dest].toString(2).length > 32){
                     extend = window.interpreter['regvals'][dest].toString(2).length - 32;
@@ -391,6 +459,23 @@ function interpret() {
                 op_two = parseInt(ins[3].slice(1));
                 if(ins[3].slice(0, 1) == 'r'){
                     op_two = window.interpreter['regvals'][op_two];
+                }
+                if(ins.length > 4){
+                    shift_val = parseInt(ins[5].slice(1));
+                    if(ins[5].slice(0, 1) == 'r'){
+                        shift_val = window.interpreter['regvals'][shift_val];
+                    }
+                    switch(ins[4]){
+                        case 'lsl':
+                            op_two = op_two << shift_val;
+                            break;
+                        case 'lsr':
+                            op_two = op_two >> shift_val;
+                            break;
+                        case 'asr':
+                            op_two = op_two >> shift_val;
+                            break;
+                    }
                 }
                 window.interpreter['regvals'][dest] = op_one - op_two + window.interpreter['flags'].c - 1;
                 if(window.interpreter['regvals'][dest].toString(2).length > 32){
@@ -431,6 +516,23 @@ function interpret() {
                 if(ins[3].slice(0, 1) == 'r'){
                     op_two = window.interpreter['regvals'][op_two];
                 }
+                if(ins.length > 4){
+                    shift_val = parseInt(ins[5].slice(1));
+                    if(ins[5].slice(0, 1) == 'r'){
+                        shift_val = window.interpreter['regvals'][shift_val];
+                    }
+                    switch(ins[4]){
+                        case 'lsl':
+                            op_two = op_two << shift_val;
+                            break;
+                        case 'lsr':
+                            op_two = op_two >> shift_val;
+                            break;
+                        case 'asr':
+                            op_two = op_two >> shift_val;
+                            break;
+                    }
+                }
                 window.interpreter['regvals'][dest] = op_two - op_one + window.interpreter['flags'].c - 1;
                 if(window.interpreter['regvals'][dest].toString(2).length > 32){
                     extend = window.interpreter['regvals'][dest].toString(2).length - 32;
@@ -469,6 +571,23 @@ function interpret() {
                 op_two = parseInt(ins[3].slice(1));
                 if(ins[3].slice(0, 1) == 'r'){
                     op_two = window.interpreter['regvals'][op_two];
+                }
+                if(ins.length > 4){
+                    shift_val = parseInt(ins[5].slice(1));
+                    if(ins[5].slice(0, 1) == 'r'){
+                        shift_val = window.interpreter['regvals'][shift_val];
+                    }
+                    switch(ins[4]){
+                        case 'lsl':
+                            op_two = op_two << shift_val;
+                            break;
+                        case 'lsr':
+                            op_two = op_two >> shift_val;
+                            break;
+                        case 'asr':
+                            op_two = op_two >> shift_val;
+                            break;
+                    }
                 }
                 window.interpreter['regvals'][dest] = op_one & op_two;
                 if(window.interpreter['regvals'][dest].toString(2).length > 32){
@@ -509,6 +628,23 @@ function interpret() {
                 if(ins[3].slice(0, 1) == 'r'){
                     op_two = window.interpreter['regvals'][op_two];
                 }
+                if(ins.length > 4){
+                    shift_val = parseInt(ins[5].slice(1));
+                    if(ins[5].slice(0, 1) == 'r'){
+                        shift_val = window.interpreter['regvals'][shift_val];
+                    }
+                    switch(ins[4]){
+                        case 'lsl':
+                            op_two = op_two << shift_val;
+                            break;
+                        case 'lsr':
+                            op_two = op_two >> shift_val;
+                            break;
+                        case 'asr':
+                            op_two = op_two >> shift_val;
+                            break;
+                    }
+                }
                 window.interpreter['regvals'][dest] = op_one | op_two;
                 if(window.interpreter['regvals'][dest].toString(2).length > 32){
                     extend = window.interpreter['regvals'][dest].toString(2).length - 32;
@@ -548,6 +684,23 @@ function interpret() {
                 if(ins[3].slice(0, 1) == 'r'){
                     op_two = window.interpreter['regvals'][op_two];
                 }
+                if(ins.length > 4){
+                    shift_val = parseInt(ins[5].slice(1));
+                    if(ins[5].slice(0, 1) == 'r'){
+                        shift_val = window.interpreter['regvals'][shift_val];
+                    }
+                    switch(ins[4]){
+                        case 'lsl':
+                            op_two = op_two << shift_val;
+                            break;
+                        case 'lsr':
+                            op_two = op_two >> shift_val;
+                            break;
+                        case 'asr':
+                            op_two = op_two >> shift_val;
+                            break;
+                    }
+                }
                 window.interpreter['regvals'][dest] = op_one ^ op_two;
                 if(window.interpreter['regvals'][dest].toString(2).length > 32){
                     extend = window.interpreter['regvals'][dest].toString(2).length - 32;
@@ -586,6 +739,23 @@ function interpret() {
                 op_two = parseInt(ins[3].slice(1));
                 if(ins[3].slice(0, 1) == 'r'){
                     op_two = window.interpreter['regvals'][op_two];
+                }
+                if(ins.length > 4){
+                    shift_val = parseInt(ins[5].slice(1));
+                    if(ins[5].slice(0, 1) == 'r'){
+                        shift_val = window.interpreter['regvals'][shift_val];
+                    }
+                    switch(ins[4]){
+                        case 'lsl':
+                            op_two = op_two << shift_val;
+                            break;
+                        case 'lsr':
+                            op_two = op_two >> shift_val;
+                            break;
+                        case 'asr':
+                            op_two = op_two >> shift_val;
+                            break;
+                    }
                 }
                 window.interpreter['regvals'][dest] = op_one & (~op_two);
                 if(window.interpreter['regvals'][dest].toString(2).length > 32){
