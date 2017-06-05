@@ -95,12 +95,12 @@ function interpret() {
                 if(ins.length > 3){
                     shift_val = parseInt(ins[4].slice(1));
                     if(ins[4].slice(0, 1) == 'r'){
-                        shift_val = regvals[shift_val];
+                        shift_val = window.interpreter['regvals'][shift_val];
                     }
                     switch(ins[3]){
                         case 'lsl':
                             op_one = op_one << shift_val;
-                            alert(op_one + ' ' + shift_val);
+                            //alert(op_one + ' ' + shift_val);
                             break;
                         case 'lsr':
                             op_one = op_one >> shift_val;
@@ -131,12 +131,12 @@ function interpret() {
                 dest = parseInt(ins[1].slice(1));
                 op_one = parseInt(ins[2].slice(1));
                 if(ins[2].slice(0, 1) == 'r'){
-                    op_one = regvals[op_one];
+                    op_one = window.interpreter['regvals'][op_one];
                 }
                 if(ins.length > 3){
                     shift_val = parseInt(ins[4].slice(1));
                     if(ins[4].slice(0, 1) == 'r'){
-                        shift_val = regvals[shift_val];
+                        shift_val = window.interpreter['regvals'][shift_val];
                     }
                     switch(ins[3]){
                         case 'lsl':
