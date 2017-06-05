@@ -14,49 +14,22 @@
 		}
 
 		function refreshpage() {
-			instate(window.regvals, window.flags);
-			if(document.getElementById("encode"))
-				document.getElementById("encode").remove();
-			var d = document.getElementById("compile");
-			d.style.display = "inline";
-			d = d.nextElementSibling;
-			d.style.display = "";
-
-			var d = document.getElementById("run");
-			d.style.display = "inline";
-			d = d.nextElementSibling;
-			d.style.display = "";
-
 			var cont = document.getElementById("code");
 
 			if(cont.tagName == "DIV")
 				cont = cont.innerHTML;
 			else
 				cont = cont.value;
-
+			
 			cont = cont.replace(/<br>/g, "\n");
 			cont = cont.replace(/<br\\>/g, "\n");
 			cont = cont.replace(/<span class=("|')error("|')>/g, "");
 			cont = cont.replace("</span>", "");
 
-			document.getElementById("code").remove();
-			var e = document.getElementById("editor");
-			e.appendChild(document.createElement("textarea"));
-			e = e.children[0];
-			e.id = "code";
-			e.style.width = (parseInt(document.getElementById("editor").style.width) - (8)) + "px";
-			e.value = cont;
-
-			var tab = document.getElementById("data");
-			tab.appendChild(document.createElement("tbody"));
-			tab.children[0].remove();
-
-			window.datasec = new Object();
-			window.cont = [];
-			window.labs = new Object();
-
-			setupMemory();
-			instateMemory();
+			global.localStorage.code = cont;
+			console.log(global.localStorage.getItem("code"))
+			alert()
+			location.reload();
 		}
 
 		function goto() {
@@ -74,7 +47,7 @@
 	</script>
 </head>
 
-<body onresize="location.reload()">
+<body onresize="refresh()">
 	<div id="header">
 		<img id = "dec" src="resources/dec.png" class="enab" style="display: none;">
 		<img class = "dis" src="resources/dec.png" style="display: inline;">
@@ -136,6 +109,13 @@
 	<script>
 		setupMemory();
 		instateMemory();
+
+		if(global.localStorage.getItem("code") !== null) {
+			document.getElementById("code").innerHTML = global.localStorage.getItem("code");
+			global.localStorage.clear();
+		}
+
+		window.addEventListener("close", function() {global.localStorage.clear(); this.close(true);});
 	</script>
 </body>
 
