@@ -269,7 +269,8 @@ function interpret() {
                     window.interpreter['flags'].v = 0;
                 }
                 window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
-                break; 
+                break;
+            case 'adc': 
         }
     }
 }
