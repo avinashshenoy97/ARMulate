@@ -2,49 +2,49 @@ function processconditions(cc) {
     var conditioncodes = ['eq', 'ne', 'cs', 'hs', 'cc', 'lo', 'mi', 'pl', 'vs', 'vc', 'hi', 'ls', 'ge', 'lt', 'gt', 'le', 'al'];
 
     var p = conditioncodes.findIndex(function (c) { return c == cc });
-
+    alert(p);
     switch (p) {
         case 0:     //eq
-            return Boolean(flags.z);   //if z = 1; return true
+            return Boolean(window.interpreter['flags'].z);   //if z = 1; return true
 
         case 1:     //ne
-            return !Boolean(flags.z);    //if z = 0; return true
+            return !Boolean(window.interpreter['flags'].z);    //if z = 0; return true
 
         case 2: case 3:     //cs or hs
-            return Boolean(flag.c);     //if c = 1; return true
+            return Boolean(window.interpreter['flags'].c);     //if c = 1; return true
 
         case 4: case 5:     //cc or lo
-            return !Boolean(flag.c);    //if c = 0; return true
+            return !Boolean(window.interpreter['flags'].c);    //if c = 0; return true
 
         case 6:             //mi
-            return Boolean(flag.n);     //if n = 1; return true
+            return Boolean(window.interpreter['flags'].n);     //if n = 1; return true
 
         case 7:             //pl
-            return (!Boolean(flag.n) || Boolean(flag.z));   //if n=0 or z=1; return true
+            return (!Boolean(window.interpreter['flags'].n) || Boolean(flag.z));   //if n=0 or z=1; return true
 
         case 8:             //vs
-            return Boolean(flag.v);     //if v=1; return true
+            return Boolean(window.interpreter['flags'].v);     //if v=1; return true
 
         case 9:             //vc
-            return !Boolean(flag.v);    //if v=0; return false
+            return !Boolean(window.interpreter['flags'].v);    //if v=0; return false
 
         case 10:            //hi
-            return !Boolean(flag.n);     //if n=0; return true
+            return !Boolean(window.interpreter['flags'].n);     //if n=0; return true
 
         case 11:            //ls
-            return (Boolean(flag.n) || Boolean(flag.z));    //if n=1 or z=1;
+            return (Boolean(window.interpreter['flags'].n) || Boolean(window.interpreter['flags'].z));    //if n=1 or z=1;
 
         case 12:            //ge
-            return (!Boolean(flag.n) || Boolean(flag.z));   //if n=0 or z=1; return true
+            return (!Boolean(window.interpreter['flags'].n) || Boolean(window.interpreter['flags'].z));   //if n=0 or z=1; return true
 
         case 13:            //lt
-            return Boolean(flag.n);     //if n = 1; return true
+            return Boolean(window.interpreter['flags'].n);     //if n = 1; return true
 
         case 14:            //gt
-            return !Boolean(flag.n);     //if n=0; return true
+            return !Boolean(window.interpreter['flags'].n);     //if n=0; return true
 
         case 15:            //le
-            return (Boolean(flag.n) || Boolean(flag.z));    //if n=1 or z=1;
+            return (Boolean(window.interpreter['flags'].n) || Boolean(window.interpreter['flags'].z));    //if n=1 or z=1;
 
         case 16:            //al
             return true;
@@ -61,33 +61,187 @@ var longmul_instr = ['umull', 'umlal', 'smull', 'smlal']
 var controlflow = ['bl', 'b']       //important : has to be arranged in descending order of length
 var swiins = ['0x00', '0x02', '0x011', '0x12', '0x13', '0x66', '0x68', '0x69', '0x6a', '0x6b', '0x6c', '0x6d'];
 
-function interpret(line) {
-    var interpreter = window.interpreter;
-
-    //Identify, process and execute :-
-
-    //SWI
-
-    //Data Processing
-
-    //Memory Access
-
-    //Multiply
-
-    //Long Multiply
-
-    //Control Flow
-
-    if (interpreter.deci) {
-        interpreter.copier();
+function interpret() {
+    var cont = window.interpreter['code'];
+    var ins = cont[window.interpreter['cline']].split(' ');
+    var op = ins[0].slice(0, 3);
+    var cond = ins[0].slice(3);
+    var cond_exec = 1;
+    window.interpreter['cline'] += 1;
+    if(cond != ''){
+        if(cond.length > 2){
+            cond_exec = processconditions(cond.slice(0, 2));
+        }
+        else if(cond.length == 2){
+            cond_exec = processconditions(cond);
+        }
+        if(!cond_exec){
+            return;
+        }
     }
-    else if (interpreter.bin) {
-        interpreter.copier();
-        interpreter.bindriver();
+    for(k = 0; k < dataprotworeg.length; k++){
+        if(op == dataprotworeg[k]){
+            break;
+        }
     }
-    else if (interpreter.hexa) {
-        interpreter.copier();
-        interpreter.hexdriver();
+    if(k < dataprotworeg.length){
+        switch(op){
+            case 'mov':
+                dest = parseInt(ins[1].slice(1));
+                op_one = parseInt(ins[2].slice(1));
+                if(ins[2].slice(0, 1) == 'r'){
+                    op_one = window.interpreter['regvals'][op_one];
+                }
+                if(ins.length > 3){
+                    shift_val = parseInt(ins[4].slice(1));
+                    if(ins[4].slice(0, 1) == 'r'){
+                        shift_val = regvals[shift_val];
+                    }
+                    switch(ins[3]){
+                        case 'lsl':
+                            op_one = op_one << shift_val;
+                            alert(op_one + ' ' + shift_val);
+                            break;
+                        case 'lsr':
+                            op_one = op_one >> shift_val;
+                            break;
+                        case 'asr':
+                            op_one = op_one >> shift_val;
+                            break;
+                    }
+                }
+                window.interpreter['regvals'][dest] = op_one;
+                if(cond.length > 2 || cond.length == 1){
+                    if(window.interpreter['regvals'][dest] == 0){
+                        window.interpreter['flags'].z = 1;
+                        window.interpreter['flags'].n = 0;
+                        window.interpreter['flags'].c = 0;
+                        window.interpreter['flags'].v = 0;
+                    }
+                    if(window.interpreter['regvals'][dest] < 0){
+                        window.interpreter['flags'].n = 1;
+                        window.interpreter['flags'].z = 0;
+                        window.interpreter['flags'].c = 0;
+                        window.interpreter['flags'].v = 0;
+                    }
+                }
+                window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
+                break;
+            case 'mvn':
+                dest = parseInt(ins[1].slice(1));
+                op_one = parseInt(ins[2].slice(1));
+                if(ins[2].slice(0, 1) == 'r'){
+                    op_one = regvals[op_one];
+                }
+                if(ins.length > 3){
+                    shift_val = parseInt(ins[4].slice(1));
+                    if(ins[4].slice(0, 1) == 'r'){
+                        shift_val = regvals[shift_val];
+                    }
+                    switch(ins[3]){
+                        case 'lsl':
+                            op_one = op_one << shift_val;
+                            break;
+                        case 'lsr':
+                            op_one = op_one >> shift_val;
+                            break;
+                        case 'asr':
+                            op_one = op_one >> shift_val;
+                            break;
+                    }
+                }
+                window.interpreter['regvals'][dest] = -op_one;
+                if(cond.length > 2 || cond.length == 1){
+                    if(window.interpreter['regvals'][dest] == 0){
+                        window.interpreter['flags'].z = 1;
+                        window.interpreter['flags'].n = 0;
+                        window.interpreter['flags'].c = 0;
+                        window.interpreter['flags'].v = 0;
+                    }
+                    if(window.interpreter['regvals'][dest] < 0){
+                        window.interpreter['flags'].n = 1;
+                        window.interpreter['flags'].z = 0;
+                        window.interpreter['flags'].c = 0;
+                        window.interpreter['flags'].v = 0;
+                    }
+                }
+                window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
+                break;
+            case 'cmp':
+                op_one = window.interpreter['regvals'][parseInt(ins[1].slice(1))];
+                op_two = parseInt(ins[2].slice(1));
+                if(ins[2].slice(0, 1) == 'r'){
+                    op_two = window.interpreter['regvals'][op_two];
+                }
+                res = op_one - op_two;
+                alert(res);
+                if(res == 0){
+                    window.interpreter['flags'].z = 1;
+                    window.interpreter['flags'].c = 1;
+                    window.interpreter['flags'].n = 0;
+                    window.interpreter['flags'].v = 0;
+                }
+                else if(res > 0){
+                    window.interpreter['flags'].c = 1;
+                    window.interpreter['flags'].n = 0;
+                    window.interpreter['flags'].z = 0;
+                    window.interpreter['flags'].v = 0;
+                }
+                else if(res < 0){
+                    window.interpreter['flags'].n = 1;
+                    window.interpreter['flags'].z = 0;
+                    window.interpreter['flags'].c = 0;
+                    window.interpreter['flags'].v = 0;
+                }
+                window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
+                break;
+            case 'cmn':
+                op_one = window.interpreter['regvals'][parseInt(ins[1].slice(1))];
+                op_two = parseInt(ins[2].slice(1));
+                if(ins[2].slice(0, 1) == 'r'){
+                    op_two = window.interpreter['regvals'][op_two];
+                }
+                res = op_two - op_one;
+                if(res == 0){
+                    window.interpreter['flags'].z = 1;
+                    window.interpreter['flags'].c = 1;
+                    window.interpreter['flags'].n = 0;
+                    window.interpreter['flags'].v = 0;
+                }
+                else if(res > 0){
+                    window.interpreter['flags'].c = 1;
+                    window.interpreter['flags'].n = 0;
+                    window.interpreter['flags'].z = 0;
+                    window.interpreter['flags'].v = 0;
+                }
+                else if(res < 0){
+                    window.interpreter['flags'].n = 1;
+                    window.interpreter['flags'].z = 0;
+                    window.interpreter['flags'].c = 0;
+                    window.interpreter['flags'].v = 0;
+                }
+                window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
+                break;
+        }
+    }
+    for(k = 0; k < dataprocessing.length; k++){
+        if(op == dataprocessing[k]){
+            break;
+        }
+    }
+    if(k < dataprocessing.length){
+        switch(op){
+            case 'add':
+                dest = parseInt(ins[1].slice(1));
+                op_one = parseInt(ins[2].slice(1));
+                op_twp = parseInt(ins[3].slice(1));
+                if(ins[3].search('#') != 1){
+                    regvals[dest] = regvals[op_one] + op_two
+                } 
+                else{
+                    regvals[dest] = regvals[op_one] + regvals[op_two]
+                }
+        }
     }
 }
 
