@@ -7,6 +7,18 @@
 		function setupMemory() {
 			mem = new Object()
 			mem.size = 16000;		//16 KB default
+			mem.changed = new Object();
+			var fill = "0".charCodeAt();
+			fill = fill.toString(2);
+			while(fill.length != 8) {
+				fill = "0" + fill;
+			}
+			console.log(fill)
+			for(var i = 0 ; i < mem.size ; i += 8) {
+				for(var j = 0 ; j < 8 ; j++) {
+					mem[i+j] = Number((fill[j]));
+				}
+			}
 		}
 
 		function setSize(n) {
@@ -27,17 +39,18 @@
 			cont = cont.replace("</span>", "");
 
 			global.localStorage.code = cont;
-			console.log(global.localStorage.getItem("code"))
-			alert()
 			location.reload();
 		}
 
 		function goto() {
 			var l = document.getElementById("gotoline").value;
-			l = Math.floor(l / mem.width) * (mem.width);
+			var w = mem.width - (((mem.width+2) / 10 - 1) * 2);
+			w = w * mem.currBitView;
+			l = Math.floor(l / w) * w;
+			console.log(l + " " + w)
 			if(l != 0)
-				l -= mem.width;
-			document.getElementById("b" + l).scrollIntoView();
+				l -= w;
+			document.getElementById("b" + (l)).scrollIntoView();
 		}
 
 		function scrollTogether(event) {
@@ -47,7 +60,7 @@
 	</script>
 </head>
 
-<body onresize="refresh()">
+<body onresize="refreshpage()">
 	<div id="header">
 		<img id = "dec" src="resources/dec.png" class="enab" style="display: none;">
 		<img class = "dis" src="resources/dec.png" style="display: inline;">
@@ -108,7 +121,7 @@
 	<script src = "scripts/interpreter.js"></script>
 	<script>
 		setupMemory();
-		instateMemory();
+		instateMemory(1);
 
 		if(global.localStorage.getItem("code") !== null) {
 			document.getElementById("code").innerHTML = global.localStorage.getItem("code");
