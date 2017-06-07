@@ -1,3 +1,17 @@
+function extend(n, toLen) {		//pad 0s to string or number to length 8
+	var s = "" + n;
+	while(s.length != toLen)
+		s = "0" + s;
+
+	return s;
+}
+
+function concise(s) {		//un-pad 0s
+	var n = s;
+	while(n[0] != "0" || n.length == 1)
+		n = n.slice(1);
+}
+
 function createMemoryComponent() {
 	var tr = document.createElement("tr");
 	tr.appendChild(document.createElement("td"));
@@ -102,7 +116,7 @@ function writeToMem(byteData, atByte) {
 
 	mem = window.mem
 	var bitView = mem.currBitView;
-	var bdata = extend(tobase(byteData, 2));				//convert the data to binary
+	var bdata = extend(tobase(byteData, 2), 8);				//convert the data to binary
 
 	for (var i = 0; i < bdata.length; i++) {
 		mem[atByte + i] = parseInt(bdata[i]);	//change memory

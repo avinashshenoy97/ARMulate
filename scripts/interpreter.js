@@ -54,7 +54,7 @@ function processconditions(cc) {
 }
 
 function instateRegisters() {
-    window.copier();
+    window.interpreter.copier();
     window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
 
     if(window.interpreter.bin)

@@ -1,4 +1,5 @@
 var regvals = [], decreg = [];
+regvals.size = 32;
 var flags = new Object();
 var conv = new Object();
 for(var x = 0 ; x < 10 ; x++) {
@@ -23,20 +24,6 @@ conv["F"] = 15;
 flags["n"] = flags["c"] = flags["z"] = flags["v"] = 0;
 
 var deci = true, bin = false, hexa = false;
-
-function extend(n) {		//pad 0s to string or number to length 8
-	var s = "" + n;
-	while(s.length != 8)
-		s = "0" + s;
-
-	return s;
-}
-
-function concise(s) {		//un-pad 0s
-	var n = s;
-	while(n[0] != "0" || n.length == 1)
-		n = n.slice(1);
-}
 
 function instate(regvals, flags) {				//put regvals in regbank on UI and maintain decimal regvals
 	//alert("YOLO");
@@ -101,8 +88,8 @@ function decdriver() {
 		btn.style.display = "inline";
 		btn.nextElementSibling.style.display = "none";	//enable the button
 
-		for(var x = 0 ; x < 16 ; x++) {
-			regvals[x] = todec(regvals[x], 2);
+		for(var x = 0 ; x < 13 ; x++) {
+			regvals[x] = parseInt(regvals[x], 2);
 		}
 		instate(regvals, flags);
 	}
@@ -111,8 +98,8 @@ function decdriver() {
 		btn.style.display = "inline";
 		btn.nextElementSibling.style.display = "none";	//enable the button
 
-		for(var x = 0 ; x < 16 ; x++) {
-			regvals[x] = todec(regvals[x].slice(2), 16);
+		for(var x = 0 ; x < 13 ; x++) {
+			regvals[x] = parseInt(regvals[x].slice(2), 16);
 		}
 		instate(regvals, flags);
 	}
@@ -135,8 +122,8 @@ function bindriver() {
 		btn.style.display = "inline";
 		btn.nextElementSibling.style.display = "none";	//enable the button
 
-		for(var x = 0 ; x < 16 ; x++) {
-			regvals[x] = todec(regvals[x].slice(2), 16);
+		for(var x = 0 ; x < 13 ; x++) {
+			regvals[x] = parseInt(regvals[x].slice(2), 16);
 		}
 		deci = true;
 	}
@@ -147,8 +134,10 @@ function bindriver() {
 		btn.nextElementSibling.style.display = "none";	//enable the button
 
 		var x = 0;
-		while(x < 16) {
-			regvals[x] = tobase(regvals[x], 2);
+		while(x < 13) {
+			regvals[x] = (regvals[x] >>> 0).toString(2);
+			if(regvals[x].length != regvals.size)
+				regvals[x] = extend(regvals[x], regvals.size);
 			x += 1;
 		}
 		instate(regvals, flags);
@@ -172,8 +161,8 @@ function hexdriver() {
 		btn.style.display = "inline";
 		btn.nextElementSibling.style.display = "none";	//enable the button
 
-		for(var x = 0 ; x < 16 ; x++) {
-			regvals[x] = todec(regvals[x], 2);
+		for(var x = 0 ; x < 13 ; x++) {
+			regvals[x] = parseInt(regvals[x], 2);
 		}
 		deci = true;
 	}
@@ -183,8 +172,8 @@ function hexdriver() {
 		btn.style.display = "inline";
 		btn.nextElementSibling.style.display = "none";	//enable the button
 
-		for(var x = 0 ; x < 16 ; x++) {
-			regvals[x] = "0x" + tobase(regvals[x], 16);
+		for(var x = 0 ; x < 13 ; x++) {
+			regvals[x] = "0x" + (regvals[x]).toString(16).toUpperCase();
 		}
 		instate(regvals, flags);
 	}
@@ -216,7 +205,7 @@ function decinstate() {				//put regvals in regbank on UI and maintain decimal r
 for(var x = 0 ; x < 16 ; x++)
 	regvals[x] = 0;
 
-regvals[12] = 5000;
+regvals[13] = "0x" + (5000).toString(16);
 
 decinstate();
 instate(regvals, flags);

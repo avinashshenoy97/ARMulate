@@ -1,7 +1,7 @@
 var w = window.innerWidth - (8 * 6);
 
 var d = document.getElementById('rbank');
-var t = (w * 20 / 100);
+var t = (w * 30 / 100);
 d.style.width = t + "px";
 
 d = document.getElementById('editor');
