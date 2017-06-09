@@ -42,8 +42,20 @@
 			location.reload();
 		}
 
+		function gotodriver(event) {
+			if(event.keyCode == 13)
+				goto();
+		}
+
+		function undoGoTo() {
+			var ele = document.getElementById("gotoline");
+			ele.removeEventListener("keypress", goto);
+		}
+
 		function goto() {
-			var l = document.getElementById("gotoline").value;
+			var ele = document.getElementById("gotoline");
+			var l = ele.value;
+			ele.value = "";
 			var w = mem.width - (((mem.width+2) / 10 - 1) * 2);
 			w = w * mem.currBitView;
 			l = Math.floor(l / w) * w;
@@ -76,8 +88,8 @@
 		<img class = "dis" src="resources/run.svg">
 		<img id = "refresh" onclick = "refreshpage()" src="resources/reload.svg" class="enab">
 		<span id="goto">
-			<p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p></p>
-			<input type="text" id="gotoline">
+			<p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p>
+			<input type="text" id="gotoline" onblur="undoGoTo()" onkeypress="gotodriver(event)">
 			<button onclick="goto()">Go To</button>
 		</span>
 	</div>
@@ -130,6 +142,7 @@
 
 		window.addEventListener("close", function() {global.localStorage.clear(); this.close(true);});
 	</script>
+	<script src="scripts/setmenu.js"></script>
 </body>
 
 </html>

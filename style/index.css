@@ -33,6 +33,10 @@ body {
 	padding: 8px 5px 8px 5px;
 }
 
+#goto {
+	display: inline;
+}
+
 #goto > p {
 	display: none;
 }
@@ -133,7 +137,7 @@ td {
 }
 
 #memory {
-	padding: 8px;
+	margin: 8px 8px 0px 8px;
 	position: fixed;
 	bottom: 8px;
 	background-color: silver;
