@@ -92,8 +92,10 @@ function preprocess() {
                     var d = icont[i].slice(ind).indexOf(" ") + ind; alert("d " + d)
                     var type = icont[i].slice(ind, d).toLowerCase();
                     //alert(type)
-                    var size = 8;
+                    var size = 8;       //bits
                     var dat = icont[i].slice(d+1).split(",")
+                    console.log(dat)
+
                     if(type == ".asciz") {
                         size *= 1;
                         var dat = String(icont[i].match(/["]\w*["]/gi));
@@ -102,20 +104,60 @@ function preprocess() {
                         console.log(dat.charCodeAt(k))
                         console.log(memadd)
                         for(var k = 1 ; k < dat.length-1 ; k++) {
-                            writeToMem(dat.charCodeAt(k), memadd);
+                            writeToMem(dat.charCodeAt(k), memadd, size);
                             memadd += size;
                         }
                     }
-                    else if(type == ".byte")
+                    else if(type == ".byte") {
                         size *= 1;
-                    else if(type == ".word")
-                        size *= 2;
-                    else if(type == ".halfword")
+                        for(var i = 0 ; i < dat.length ; i++) {
+                            var d = parseInt(dat[i]);
+                            if(d > 0) {
+                                if(d > (Math.pow(2, size) -1))
+                                    return true;
+                            }
+                            else {
+                                if(d < -(Math.pow(2, size-1)))
+                                    return true;
+                            }
+                            writeToMem(d, memadd, size);
+                            memadd += size;
+                        }
+                    }
+                    else if(type == ".word") {
                         size *= 4;
+                        for(var i = 0 ; i < dat.length ; i++) {
+                            var d = parseInt(dat[i]);
+                            if(d > 0) {
+                                if(d > (Math.pow(2, size) -1))
+                                    return true;
+                            }
+                            else {
+                                if(d < -(Math.pow(2, size-1)))
+                                    return true;
+                            }
+                            writeToMem(d, memadd, size);
+                            memadd += size;
+                        }
+                    }
+                    else if(type == ".halfword") {
+                        size *= 2;
+                        for(var i = 0 ; i < dat.length ; i++) {
+                            var d = parseInt(dat[i]);
+                            if(d > 0) {
+                                if(d > (Math.pow(2, size) -1))
+                                    return true;
+                            }
+                            else {
+                                if(d < -(Math.pow(2, size-1)))
+                                    return true;
+                            }
+                            writeToMem(d, memadd, size);
+                            memadd += size;
+                        }
+                    }
                     else
                         return true;
-                    
-                    //var 
                 }
                 else {
                     return true;

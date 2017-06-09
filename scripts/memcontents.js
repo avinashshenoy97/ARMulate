@@ -108,20 +108,16 @@ function instateMemory(bitView) {
 }
 
 //writes to the memory
-function writeToMem(byteData, atByte) {
-	if (byteData > 255) {
-		console.log("Too large to fit in byte");
+function writeToMem(dat, at, size) {
+	if(size > 32) {
+		alert("Too large");
 		return;
 	}
 
-	mem = window.mem
-	var bitView = mem.currBitView;
-	var bdata = extend(tobase(byteData, 2), 8);				//convert the data to binary
-
-	for (var i = 0; i < bdata.length; i++) {
-		mem[atByte + i] = parseInt(bdata[i]);	//change memory
-		mem.changed[atByte + i] = true;			//mark bits as changed
+	var bdata = extend((dat >>> 0).toString(2), 32).slice(-size);
+	for(var i = at, j = 0 ; j < size ; i++, j++) {
+		mem[i] = Number(bdata[j]);
 	}
 
-	instateMemory(bitView);				//reinstate changed memory
+	instateMemory(mem.currBitView);				//reinstate changed memory
 }
