@@ -64,8 +64,8 @@ function instateRegisters() {
 }
 
 
-var dataprocessing = ['and', 'add', 'sub', 'rsb', 'adc', 'sbc', 'rsc', 'orr', 'eor', 'bic', 'tst', 'teq']
-var dataprotworeg = ['mov', 'mvn', 'cmp', 'cmn', 'clz']
+var dataprocessing = ['and', 'add', 'sub', 'rsb', 'adc', 'sbc', 'rsc', 'orr', 'eor', 'bic'];
+var dataprotworeg = ['mov', 'mvn', 'cmp', 'cmn', 'clz', 'tst','teq'];
 var memoryaccess = ['ldr', 'str', 'ldm', 'stm']
 var mult_instr = ['mul', 'mla', 'mls']
 var longmul_instr = ['umull', 'umlal', 'smull', 'smlal']
@@ -189,8 +189,8 @@ function interpret() {
                 if(ins[2].slice(0, 1) == 'r'){
                     op_two = window.interpreter['regvals'][op_two];
                 }
+                res = 0;
                 res = op_one - op_two;
-                alert(res);
                 if(res == 0){
                     window.interpreter['flags'].z = 1;
                     window.interpreter['flags'].c = 1;
@@ -217,6 +217,7 @@ function interpret() {
                 if(ins[2].slice(0, 1) == 'r'){
                     op_two = window.interpreter['regvals'][op_two];
                 }
+                res = 0;
                 res = op_two - op_one;
                 if(res == 0){
                     window.interpreter['flags'].z = 1;
@@ -243,6 +244,63 @@ function interpret() {
                 op_one = window.interpreter['regvals'][parseInt(ins[2].slice(1))];
                 window.interpreter['regvals'][dest] = 32 - parseInt((op_one.toString(2)).length);
                 window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
+                instateRegisters();
+                break;
+            case 'tst':
+                op_one = window.interpreter['regvals'][parseInt(ins[1].slice(1))];
+                op_two = parseInt(ins[2].slice(1));
+                if(ins[2].search('r') != -1){
+                    op_two = window.interpreter['regvals'][op_two];
+                }
+                res = 0;
+                res = op_one & op_two;
+                if(res == 0){
+                    window.interpreter['flags'].z = 1;
+                    window.interpreter['flags'].n = 0;
+                    window.interpreter['flags'].c = 0;
+                    window.interpreter['flags'].v = 0;
+                }
+                else if(res < 0){
+                    window.interpreter['flags'].z = 0;
+                    window.interpreter['flags'].n = 1;
+                    window.interpreter['flags'].c = 0;
+                    window.interpreter['flags'].v = 0;
+                }
+                else{
+                    window.interpreter['flags'].z = 0;
+                    window.interpreter['flags'].n = 0;
+                    window.interpreter['flags'].c = 0;
+                    window.interpreter['flags'].v = 0;
+                }
+                instateRegisters();
+                break;
+            case 'teq':
+                op_one = window.interpreter['regvals'][parseInt(ins[1].slice(1))];
+                op_two = parseInt(ins[2].slice(1));
+                if(ins[2].search('r') != -1){
+                    op_two = window.interpreter['regvals'][op_two];
+                }
+                res = 0;
+                res = op_one ^ op_two;
+                if(res == 0){
+                    window.interpreter['flags'].z = 1;
+                    window.interpreter['flags'].n = 0;
+                    window.interpreter['flags'].c = 0;
+                    window.interpreter['flags'].v = 0;
+                }
+                else if(res < 0){
+                    window.interpreter['flags'].z = 0;
+                    window.interpreter['flags'].n = 1;
+                    window.interpreter['flags'].c = 0;
+                    window.interpreter['flags'].v = 0;
+                }
+                else{
+                    window.interpreter['flags'].z = 0;
+                    window.interpreter['flags'].n = 0;
+                    window.interpreter['flags'].c = 0;
+                    window.interpreter['flags'].v = 0;
+                }
+                instateRegisters();
                 break;
         }
     }

@@ -3,7 +3,6 @@ var cont = [];
 var labs = new Object();        //labels in code(branch targets)
 var interpreter = new Object();
 
-
 //setup the interpreter object
 function setup_interpreter() {
     interpreter = window.interpreter;
@@ -212,8 +211,8 @@ function preprocess() {
 
 // Compiles a given program
 function processcont(tp){
-    var dataprocessing = ['and', 'add', 'sub', 'rsb', 'adc', 'sbc', 'rsc', 'orr', 'eor', 'bic', 'tst', 'teq']
-    var dataprotworeg = ['mov', 'mvn', 'cmp', 'cmn', 'clz']
+    var dataprocessing = ['and', 'add', 'sub', 'rsb', 'adc', 'sbc', 'rsc', 'orr', 'eor', 'bic'];
+    var dataprotworeg = ['mov', 'mvn', 'cmp', 'cmn', 'clz', 'tst', 'teq'];
     var memoryaccess = ['ldr', 'str', 'ldm', 'stm']
     var mult_instr = ['mul', 'mla']
     var longmul_instr = ['umull', 'umlal', 'smull', 'smlal']
@@ -308,7 +307,9 @@ function processcont(tp){
                     break;
                 }
             }
+            //alert("error flag " + error_flag) ;
             error_flag = checkdpregs(regs, 0);
+            //alert("error flag "+ error_flag);
             if(error_flag){
                 //alert(regs);
                 //alert("HERE");
