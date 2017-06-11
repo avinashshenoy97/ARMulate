@@ -7,6 +7,18 @@
 		function setupMemory() {
 			mem = new Object()
 			mem.size = 16000;		//16 KB default
+			mem.changed = new Object();
+			var fill = "0".charCodeAt();
+			fill = fill.toString(2);
+			while(fill.length != 8) {
+				fill = "0" + fill;
+			}
+			console.log(fill)
+			for(var i = 0 ; i < mem.size ; i += 8) {
+				for(var j = 0 ; j < 8 ; j++) {
+					mem[i+j] = Number((fill[j]));
+				}
+			}
 		}
 
 		function setSize(n) {
@@ -14,57 +26,43 @@
 		}
 
 		function refreshpage() {
-			instate(window.regvals, window.flags);
-			if(document.getElementById("encode"))
-				document.getElementById("encode").remove();
-			var d = document.getElementById("compile");
-			d.style.display = "inline";
-			d = d.nextElementSibling;
-			d.style.display = "";
-
-			var d = document.getElementById("run");
-			d.style.display = "inline";
-			d = d.nextElementSibling;
-			d.style.display = "";
-
 			var cont = document.getElementById("code");
 
 			if(cont.tagName == "DIV")
 				cont = cont.innerHTML;
 			else
 				cont = cont.value;
-
+			
 			cont = cont.replace(/<br>/g, "\n");
 			cont = cont.replace(/<br\\>/g, "\n");
 			cont = cont.replace(/<span class=("|')error("|')>/g, "");
 			cont = cont.replace("</span>", "");
 
-			document.getElementById("code").remove();
-			var e = document.getElementById("editor");
-			e.appendChild(document.createElement("textarea"));
-			e = e.children[0];
-			e.id = "code";
-			e.style.width = (parseInt(document.getElementById("editor").style.width) - (8)) + "px";
-			e.value = cont;
+			global.localStorage.code = cont;
+			location.reload();
+		}
 
-			var tab = document.getElementById("data");
-			tab.appendChild(document.createElement("tbody"));
-			tab.children[0].remove();
+		function gotodriver(event) {
+			if(event.keyCode == 13)
+				goto();
+		}
 
-			window.datasec = new Object();
-			window.cont = [];
-			window.labs = new Object();
-
-			setupMemory();
-			instateMemory();
+		function undoGoTo() {
+			var ele = document.getElementById("gotoline");
+			ele.removeEventListener("keypress", goto);
 		}
 
 		function goto() {
-			var l = document.getElementById("gotoline").value;
-			l = Math.floor(l / mem.width) * (mem.width);
+			var ele = document.getElementById("gotoline");
+			var l = ele.value;
+			ele.value = "";
+			var w = mem.width - (((mem.width+2) / 10 - 1) * 2);
+			w = w * mem.currBitView;
+			l = Math.floor(l / w) * w;
+			console.log(l + " " + w)
 			if(l != 0)
-				l -= mem.width;
-			document.getElementById("b" + l).scrollIntoView();
+				l -= w;
+			document.getElementById("b" + (l)).scrollIntoView();
 		}
 
 		function scrollTogether(event) {
@@ -74,7 +72,7 @@
 	</script>
 </head>
 
-<body onresize="location.reload()">
+<body onresize="refreshpage()">
 	<div id="header">
 		<img id = "dec" src="resources/dec.png" class="enab" style="display: none;">
 		<img class = "dis" src="resources/dec.png" style="display: inline;">
@@ -90,8 +88,8 @@
 		<img class = "dis" src="resources/run.svg">
 		<img id = "refresh" onclick = "refreshpage()" src="resources/reload.svg" class="enab">
 		<span id="goto">
-			<p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p></p>
-			<input type="text" id="gotoline">
+			<p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p>
+			<input type="text" id="gotoline" onblur="undoGoTo()" onkeypress="gotodriver(event)">
 			<button onclick="goto()">Go To</button>
 		</span>
 	</div>
@@ -135,8 +133,16 @@
 	<script src = "scripts/interpreter.js"></script>
 	<script>
 		setupMemory();
-		instateMemory();
+		instateMemory(1);
+
+		if(global.localStorage.getItem("code") !== null) {
+			document.getElementById("code").innerHTML = global.localStorage.getItem("code");
+			global.localStorage.clear();
+		}
+
+		window.addEventListener("close", function() {global.localStorage.clear(); this.close(true);});
 	</script>
+	<script src="scripts/setmenu.js"></script>
 </body>
 
 </html>

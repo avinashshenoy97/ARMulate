@@ -33,6 +33,10 @@ body {
 	padding: 8px 5px 8px 5px;
 }
 
+#goto {
+	display: inline;
+}
+
 #goto > p {
 	display: none;
 }
@@ -133,7 +137,7 @@ td {
 }
 
 #memory {
-	padding: 8px;
+	margin: 8px 8px 0px 8px;
 	position: fixed;
 	bottom: 8px;
 	background-color: silver;
@@ -149,7 +153,7 @@ td {
 .dcol2 {
 	width: 80%;
 	max-height: 20px;
-	max-width: 100%;
+	max-width: 80%;
 	height: 20px;
 	overflow: scroll;
 	border: 1px solid black;
@@ -158,10 +162,14 @@ td {
 .memdata {
 	height: 20px;
 	overflow: hidden;
-	width: 100%;
+	overflow-x: hidden;
 	max-width: 100%;
 }
 
 #headerhelper {
 	padding: 2px;
+}
+
+pre {
+	display: inline;
 }

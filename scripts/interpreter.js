@@ -53,6 +53,17 @@ function processconditions(cc) {
     return undefined;
 }
 
+function instateRegisters() {
+    window.interpreter.copier();
+    window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
+
+    if(window.interpreter.bin)
+        window.interpreter.bindriver();
+    else if(window.interpreter.hexa)
+        window.interpreter.hexdriver();
+}
+
+
 var dataprocessing = ['and', 'add', 'sub', 'rsb', 'adc', 'sbc', 'rsc', 'orr', 'eor', 'bic', 'tst', 'teq']
 var dataprotworeg = ['mov', 'mvn', 'cmp', 'cmn', 'clz']
 var memoryaccess = ['ldr', 'str', 'ldm', 'stm']
@@ -130,7 +141,7 @@ function interpret() {
                         window.interpreter['flags'].v = 0;
                     }
                 }
-                window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
+                instateRegisters();
                 break;
             case 'mvn':
                 dest = parseInt(ins[1].slice(1));
@@ -170,7 +181,7 @@ function interpret() {
                         window.interpreter['flags'].v = 0;
                     }
                 }
-                window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
+                instateRegisters();
                 break;
             case 'cmp':
                 op_one = window.interpreter['regvals'][parseInt(ins[1].slice(1))];
@@ -198,7 +209,7 @@ function interpret() {
                     window.interpreter['flags'].c = 0;
                     window.interpreter['flags'].v = 0;
                 }
-                window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
+                instateRegisters();
                 break;
             case 'cmn':
                 op_one = window.interpreter['regvals'][parseInt(ins[1].slice(1))];
@@ -225,7 +236,7 @@ function interpret() {
                     window.interpreter['flags'].c = 0;
                     window.interpreter['flags'].v = 0;
                 }
-                window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
+                instateRegisters();
                 break;
             case 'clz':
                 dest = parseInt(ins[1].slice(1));
@@ -291,7 +302,7 @@ function interpret() {
                     window.interpreter['flags'].n = 0;
                     window.interpreter['flags'].v = 0;
                 }
-                window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
+                instateRegisters();
                 break;
             case 'adc':
                 dest = parseInt(ins[1].slice(1));
@@ -345,7 +356,7 @@ function interpret() {
                     window.interpreter['flags'].n = 0;
                     window.interpreter['flags'].v = 0;
                 }
-                window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
+                instateRegisters();
                 break;
             case 'sub':
                 dest = parseInt(ins[1].slice(1));
@@ -401,7 +412,7 @@ function interpret() {
                     }
                     window.interpreter['flags'].v = 0;
                 }
-                window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
+                instateRegisters();
                 break;
             case 'rsb':
                 dest = parseInt(ins[1].slice(1));
@@ -457,7 +468,7 @@ function interpret() {
                     }
                     window.interpreter['flags'].v = 0;
                 }
-                window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
+                instateRegisters();
                 break;
             case 'sbc':
                 dest = parseInt(ins[1].slice(1));
@@ -513,7 +524,7 @@ function interpret() {
                     }
                     window.interpreter['flags'].v = 0;
                 }
-                window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
+                instateRegisters();
                 break; 
             case 'rsc':
                 dest = parseInt(ins[1].slice(1));
@@ -569,7 +580,7 @@ function interpret() {
                     }
                     window.interpreter['flags'].v = 0;
                 }
-                window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
+                instateRegisters();
                 break; 
             case 'and':
                 dest = parseInt(ins[1].slice(1));
@@ -625,7 +636,7 @@ function interpret() {
                     }
                     window.interpreter['flags'].v = 0;
                 }
-                window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
+                instateRegisters();
                 break;
             case 'orr':
                 dest = parseInt(ins[1].slice(1));
@@ -681,7 +692,7 @@ function interpret() {
                     }
                     window.interpreter['flags'].v = 0;
                 }
-                window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
+                instateRegisters();
                 break;
             case 'eor':
                 dest = parseInt(ins[1].slice(1));
@@ -737,7 +748,7 @@ function interpret() {
                     }
                     window.interpreter['flags'].v = 0;
                 }
-                window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
+                instateRegisters();
                 break;
             case 'bic':
                 dest = parseInt(ins[1].slice(1));
