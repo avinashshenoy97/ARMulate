@@ -77,6 +77,15 @@ function interpret() {
     var ins = cont[window.interpreter['cline']].split(' ');
     var op = ins[0].slice(0, 3);
     var cond = ins[0].slice(3);
+    if(ins[0].length >= 5){
+        for(k = 0; k < longmul_instr.length; k++){
+            if(ins[0].slice(0, 5) == longmul_instr[k]){
+                op = ins[0].slice(0, 5);
+                cond = ins[0].slice(5);
+                break;
+            }
+        }
+    }
     var cond_exec = 1;
     pcval = (1024 + 4 * window.interpreter['cline']).toString(16);
     while(pcval.length < 4){
@@ -303,6 +312,7 @@ function interpret() {
                 instateRegisters();
                 break;
         }
+        return;
     }
     for(k = 0; k < dataprocessing.length; k++){
         if(op == dataprocessing[k]){
@@ -864,7 +874,8 @@ function interpret() {
                 }
                 instateRegisters();
                 break;
-        }   
+        }
+        return;   
     }
     for(k = 0; k < mult_instr.length; k++){
         if(op == mult_instr[k]){
@@ -940,6 +951,177 @@ function interpret() {
                 instateRegisters();
                 break;
         }
+        return;
+    }
+    for(k = 0; k < longmul_instr.length; k++){
+        if(op == longmul_instr[k]){
+            break;
+        }
+    }
+    if(k < longmul_instr.length){
+        switch(op){
+            case 'smull':
+                destlo = parseInt(ins[1].slice(1));
+                desthi = parseInt(ins[2].slice(1));
+                op_one = window.interpreter['regvals'][parseInt(ins[3].slice(1))];
+                op_two = window.interpreter['regvals'][parseInt(ins[4].slice(1))];
+                res = 0;
+                res = op_one * op_two;
+                res = res.toString(2);
+                if(res.length > 64){
+                    window.interpreter['regvals'][destlo] = parseInt(res.slice(32), 2);
+                    window.interpreter['regvals'][desthi] = parseInt(res.slice((64 - res.length), 32), 2);
+                    if(cond.length == 3 || cond.length == 1){
+                        window.interpreter['flags'].c = 1;
+                    }
+                }
+                else{
+                    while(res.length < 64){
+                        res = '0' + res;
+                    }
+                    window.interpreter['regvals'][desthi] = parseInt(res.slice(0, 32), 2);
+                    window.interpreter['regvals'][destlo] = parseInt(res.slice(32), 2);
+                    if(cond.length == 3 || cond.length == 1){
+                        window.interpreter['flags'].c = 0;
+                    }
+                }
+                if(window.interpreter['regvals'][destlo] == 0 && window.interpreter['regvals'][desthi] == 0 && (cond.length == 3 || cond.length == 1)){
+                    window.interpreter['flags'].z = 1;
+                }
+                else{
+                    if(cond.length == 3 || cond.length == 1){
+                        window.interpreter['flags'].z = 0;
+                    }
+                }
+                if(cond.length == 3 || cond.length == 1){
+                    window.interpreter['flags'].n = 0;
+                    window.interpreter['flags'].v = 0;
+                }
+                instateRegisters();
+                break;
+            case 'umull':
+                destlo = parseInt(ins[1].slice(1));
+                desthi = parseInt(ins[2].slice(1));
+                op_one = window.interpreter['regvals'][parseInt(ins[3].slice(1))];
+                op_two = window.interpreter['regvals'][parseInt(ins[4].slice(1))];
+                res = 0;
+                res = op_one * op_two;
+                res = res.toString(2);
+                if(res.length > 64){
+                    window.interpreter['regvals'][destlo] = parseInt(res.slice(32), 2);
+                    window.interpreter['regvals'][desthi] = parseInt(res.slice((64 - res.length), 32), 2);
+                    if(cond.length == 3 || cond.length == 1){
+                        window.interpreter['flags'].c = 1;
+                    }
+                }
+                else{
+                    while(res.length < 64){
+                        res = '0' + res;
+                    }
+                    window.interpreter['regvals'][desthi] = parseInt(res.slice(0, 32), 2);
+                    window.interpreter['regvals'][destlo] = parseInt(res.slice(32), 2);
+                    if(cond.length == 3 || cond.length == 1){
+                        window.interpreter['flags'].c = 0;
+                    }
+                }
+                if(window.interpreter['regvals'][destlo] == 0 && window.interpreter['regvals'][desthi] == 0 && (cond.length == 3 || cond.length == 1)){
+                    window.interpreter['flags'].z = 1;
+                }
+                else{
+                    if(cond.length == 3 || cond.length == 1){
+                        window.interpreter['flags'].z = 0;
+                    }
+                }
+                if(cond.length == 3 || cond.length == 1){
+                    window.interpreter['flags'].n = 0;
+                    window.interpreter['flags'].v = 0;
+                }
+                instateRegisters();
+                break;
+            case 'umlal':
+                destlo = parseInt(ins[1].slice(1));
+                desthi = parseInt(ins[2].slice(1));
+                op_one = window.interpreter['regvals'][parseInt(ins[3].slice(1))];
+                op_two = window.interpreter['regvals'][parseInt(ins[4].slice(1))];
+                prevres = window.interpreter['regvals'][desthi].toString(2) + window.interpreter['regvals'][destlo].toString(2);
+                prevres = parseInt(prevres, 2);
+                res = 0;
+                res = op_one * op_two + prevres;
+                res = res.toString(2);
+                if(res.length > 64){
+                    window.interpreter['regvals'][destlo] = parseInt(res.slice(32), 2);
+                    window.interpreter['regvals'][desthi] = parseInt(res.slice((64 - res.length), 32), 2);
+                    if(cond.length == 3 || cond.length == 1){
+                        window.interpreter['flags'].c = 1;
+                    }
+                }
+                else{
+                    while(res.length < 64){
+                        res = '0' + res;
+                    }
+                    window.interpreter['regvals'][desthi] = parseInt(res.slice(0, 32), 2);
+                    window.interpreter['regvals'][destlo] = parseInt(res.slice(32), 2);
+                    if(cond.length == 3 || cond.length == 1){
+                        window.interpreter['flags'].c = 0;
+                    }
+                }
+                if(window.interpreter['regvals'][destlo] == 0 && window.interpreter['regvals'][desthi] == 0 && (cond.length == 3 || cond.length == 1)){
+                    window.interpreter['flags'].z = 1;
+                }
+                else{
+                    if(cond.length == 3 || cond.length == 1){
+                        window.interpreter['flags'].z = 0;
+                    }
+                }
+                if(cond.length == 3 || cond.length == 1){
+                    window.interpreter['flags'].n = 0;
+                    window.interpreter['flags'].v = 0;
+                }
+                instateRegisters();
+                break;
+            case 'smlal':
+                destlo = parseInt(ins[1].slice(1));
+                desthi = parseInt(ins[2].slice(1));
+                op_one = window.interpreter['regvals'][parseInt(ins[3].slice(1))];
+                op_two = window.interpreter['regvals'][parseInt(ins[4].slice(1))];
+                prevres = window.interpreter['regvals'][desthi].toString(2) + window.interpreter['regvals'][destlo].toString(2);
+                prevres = parseInt(prevres, 2);
+                res = 0;
+                res = op_one * op_two + prevres;
+                res = res.toString(2);
+                if(res.length > 64){
+                    window.interpreter['regvals'][destlo] = parseInt(res.slice(32), 2);
+                    window.interpreter['regvals'][desthi] = parseInt(res.slice((64 - res.length), 32), 2);
+                    if(cond.length == 3 || cond.length == 1){
+                        window.interpreter['flags'].c = 1;
+                    }
+                }
+                else{
+                    while(res.length < 64){
+                        res = '0' + res;
+                    }
+                    window.interpreter['regvals'][desthi] = parseInt(res.slice(0, 32), 2);
+                    window.interpreter['regvals'][destlo] = parseInt(res.slice(32), 2);
+                    if(cond.length == 3 || cond.length == 1){
+                        window.interpreter['flags'].c = 0;
+                    }
+                }
+                if(window.interpreter['regvals'][destlo] == 0 && window.interpreter['regvals'][desthi] == 0 && (cond.length == 3 || cond.length == 1)){
+                    window.interpreter['flags'].z = 1;
+                }
+                else{
+                    if(cond.length == 3 || cond.length == 1){
+                        window.interpreter['flags'].z = 0;
+                    }
+                }
+                if(cond.length == 3 || cond.length == 1){
+                    window.interpreter['flags'].n = 0;
+                    window.interpreter['flags'].v = 0;
+                }
+                instateRegisters();
+                break;
+        }
+        return;
     }
 }
 
