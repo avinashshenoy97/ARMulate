@@ -227,6 +227,12 @@ function interpret() {
                 }
                 window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
                 break;
+            case 'clz':
+                dest = parseInt(ins[1].slice(1));
+                op_one = window.interpreter['regvals'][parseInt(ins[2].slice(1))];
+                window.interpreter['regvals'][dest] = 32 - parseInt((op_one.toString(2)).length);
+                window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
+                break;
         }
     }
     for(k = 0; k < dataprocessing.length; k++){

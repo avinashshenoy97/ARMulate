@@ -850,7 +850,7 @@ function encode(cont){
                 bin += '0';
             }
             bin += dpsco[op];       // opcode
-            alert(dpsco[op]);
+            //alert(dpsco[op]);
             if(set_flg || op == 'cmp' || op == 'cmn'){
                 bin += '1';
             }
@@ -868,7 +868,7 @@ function encode(cont){
                 bin += '11110001'
                 bin += toBin(parseInt(ins[2].slice(1)), 4);
                 encodes.push(toHex(bin));   // add to the encodes array
-                alert(bin.length + ' ' + bin);
+                //alert(bin.length + ' ' + bin);
                 continue;    
             }
             if(imm_flg){
@@ -944,10 +944,10 @@ function encode(cont){
             pre_flg = 0;
             zer_flg = 0;
             if(op == 'ldr' || op == 'str'){
-                alert(cond.length);
+                //alert(cond.length);
                 if(cond.length == 2){
                     bin = bin + conco[cond] + '01';
-                    alert(bin);
+                    //alert(bin);
                 }
                 else{
                     bin = bin + conco['al'] + '01';
