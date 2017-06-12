@@ -209,18 +209,17 @@ function preprocess() {
     return false;
 }
 
+var dataprocessing = ['and', 'add', 'sub', 'rsb', 'adc', 'sbc', 'rsc', 'orr', 'eor', 'bic'];
+var dataprotworeg = ['mov', 'mvn', 'cmp', 'cmn', 'clz', 'tst', 'teq'];
+var memoryaccess = ['ldr', 'str', 'ldm', 'stm']
+var mult_instr = ['mul', 'mla']
+var longmul_instr = ['umull', 'umlal', 'smull', 'smlal']
+var controlflow = ['bl', 'b']       //important : has to be arranged in descending order of length
+var swiins = ['0x00', '0x02', '0x011', '0x12', '0x13', '0x66', '0x68', '0x69', '0x6a', '0x6b', '0x6c', '0x6d'];
+var conditioncodes = ['eq', 'ne', 'cs', 'hs', 'cc', 'lo', 'mi', 'pl', 'vs', 'vc', 'hi', 'ls', 'ge','lt', 'gt', 'le', 'al']
+
 // Compiles a given program
 function processcont(tp){
-    var dataprocessing = ['and', 'add', 'sub', 'rsb', 'adc', 'sbc', 'rsc', 'orr', 'eor', 'bic'];
-    var dataprotworeg = ['mov', 'mvn', 'cmp', 'cmn', 'clz', 'tst', 'teq'];
-    var memoryaccess = ['ldr', 'str', 'ldm', 'stm']
-    var mult_instr = ['mul', 'mla']
-    var longmul_instr = ['umull', 'umlal', 'smull', 'smlal']
-    var controlflow = ['bl', 'b']       //important : has to be arranged in descending order of length
-    var swiins = ['0x00', '0x02', '0x011', '0x12', '0x13', '0x66', '0x68', '0x69', '0x6a', '0x6b', '0x6c', '0x6d'];
-    var conditioncodes = ['eq', 'ne', 'cs', 'hs', 'cc', 'lo', 'mi', 'pl', 'vs', 'vc', 'hi', 'ls', 'ge', 'lt', 'gt', 'le', 'al']
-    
-
     error_flag = 0;         // indicates if there is a syntax error while compiling. Set to 1 if there is an error
     error_msg = null;
     var i;
@@ -380,13 +379,15 @@ function processcont(tp){
                 if(ins.length > 4){
                     cc = ins.slice(3,5);
                     if(typeof (conditioncodes.find(function(c) {return c == cc})) === 'undefined') {
-                        error_flag = 1;
-                        error_msg = "Invalid condition codes.";
-                        break;
+                        if(cc != 'sh' && cc != 'sb') {
+                            error_flag = 1;
+                            error_msg = "Invalid condition codes.";
+                            break;
+                        }
                     }
                 }
                 if(ins.length == 4 || ins.length == 6) {
-                    if(ins.slice(-1) != 'b') {
+                    if(ins.slice(-1) != 'b' && ins.slice(-1) != 'h') {
                         error_flag = 1;
                         error_msg = "Invalid size specification.";
                         break;
@@ -711,7 +712,7 @@ function checkdpregs(regs, categ){
     var grptwolink = /^[p][c][,]\s[l][r]$/
     
     var nooffset = /^[r]([0-9]|1[0-5])[,]\s(\[[r]([0-9]|1[0-5])\]|[=]([a-z]|[A-Z]|_)(\w)*)$/
-    var immorpreoffset = /^[r]([0-9]|1[0-5])[,]\s\[[r]([0-9]|1[0-5])[,]\s([#]\-?([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-3][0-9][0-9][0-9]|40[0-8][0-9]|409[0-5])|([r]([0-9]|1[0-5]))\])!?$/
+    var immorpreoffset = /^[r]([0-9]|1[0-5])[,]\s\[[r]([0-9]|1[0-5])[,]\s([#]\-?([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-3][0-9][0-9][0-9]|40[0-8][0-9]|409[0-5])|([r]([0-9]|1[0-5])))\]!?$/
     var postind = /^[r]([0-9]|1[0-5])[,]\s\[[r]([0-9]|1[0-5])\][,]\s([#]\-?([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-3][0-9][0-9][0-9]|40[0-8][0-9]|409[0-5]))|[r]([0-9]|1[0-5])$/
 
     var mulreglist = /^[r]([0-9]|1[0-5])!?[,]\s\{(([r]([0-9]|1[0-5]))|([r]([0-9]|1[0-5])\-[r]([0-9]|1[0-5])))([,]\s(([r]([0-9]|1[0-5]))|([r]([0-9]|1[0-5])\-[r]([0-9]|1[0-5]))))*\}$/
@@ -754,6 +755,7 @@ function checkdpregs(regs, categ){
             return 0;
         }
         var immorpreoffsetval = immorpreoffset.exec(regs); 
+        alert(regs)
         if(immorpreoffsetval != null) {
             return 0;
         }

@@ -1,5 +1,5 @@
 function processconditions(cc) {
-    var conditioncodes = ['eq', 'ne', 'cs', 'hs', 'cc', 'lo', 'mi', 'pl', 'vs', 'vc', 'hi', 'ls', 'ge', 'lt', 'gt', 'le', 'al'];
+    var conditioncodes = ['eq', 'ne', 'cs', 'hs', 'cc', 'lo', 'mi', 'pl', 'vs', 'vc', 'hi', 'ls', 'ge', 'lt', 'gt', 'le', 'al', 'sh', 'sb'];
 
     var p = conditioncodes.findIndex(function (c) { return c == cc });
     alert(p);
@@ -48,6 +48,9 @@ function processconditions(cc) {
 
         case 16:            //al
             return true;
+
+        case 17: case 18:
+            return true;
     }
 
     return undefined;
@@ -73,8 +76,10 @@ var controlflow = ['bl', 'b']       //important : has to be arranged in descendi
 var swiins = ['0x00', '0x02', '0x011', '0x12', '0x13', '0x66', '0x68', '0x69', '0x6a', '0x6b', '0x6c', '0x6d'];
 
 function interpret() {
+    //window.interpreter.bin = false;
     var cont = window.interpreter['code'];
-    var ins = cont[window.interpreter['cline']].split(' ');
+    var oins = cont[window.interpreter['cline']];
+    var ins = oins.split(' ');
     var op = ins[0].slice(0, 3);
     var cond = ins[0].slice(3);
     if(ins[0].length >= 5){
@@ -1121,6 +1126,195 @@ function interpret() {
                 instateRegisters();
                 break;
         }
+        return;
+    }
+
+    for(k = 0; k < memoryaccess.length; k++){
+        if(op == memoryaccess[k]){
+            break;
+        }
+    }
+    if(k < memoryaccess.length){
+        switch(op){
+            case 'ldr':
+                var size = 8, ss, signed = false;
+                if(cond_exec == 1) {
+                    if(ins[0].length > 6)
+                        ss = ins[0].slice(-2);
+                    else
+                        ss = ins[0].slice(-1);
+                }
+                else {
+                    if(ins[0].length > 4)
+                        ss = ins[0].slice(-2);
+                    else
+                        ss = ins[0].slice(-1);
+                }
+                switch(ss) {
+                    case 'b':
+                        break;
+
+                    case 'h':
+                        size *= 2;
+                        break;
+                    
+                    case 'sh':
+                        signed = true;
+                        size *= 2;
+                        break;
+
+                    case 'sb':
+                        signed = true;
+                        break;
+
+                    default:
+                        size *= 4;
+                }
+
+                var op_one = oins.slice(oins.indexOf(' ') + 1, oins.indexOf(','));
+                console.log("O " + op_one)
+                op_one = parseInt(op_one.slice(1));
+
+                var op_two = oins.slice(oins.indexOf(','));
+                console.log(op_two)
+                var matches = null;
+                matches = op_two.match(/\[r([0-9]|1[0-5])[,]\s[#](\+|\-)?[0-9]+\]/gi);
+                if(matches !== null) {
+                    matches = matches[0];
+                    var addr = window.regvals[parseInt(matches.slice(2))];
+                    console.log(matches.slice(2) + " " + addr);
+                    var offset = parseInt(op_two.slice(op_two.indexOf('#')+1));
+                    if(op_two.slice(-1) == '!'){
+                        window.interpreter.regvals[parseInt(matches.slice(2))] = addr + offset;
+                    }
+                        
+                    addr += offset;
+                    console.log(addr + " " + typeof(addr) + " " + size);
+                    var val = '';
+                    for(var x = addr, y = 0 ; y < size ; x++, y++)
+                        val += Number(Boolean(mem[x]));
+                    console.log("v " + val)
+                    if(signed) {
+                        val = parseInt(val.slice(1), 2) - Math.pow(2, size-1);
+                    }
+                    else {
+                        val = parseInt(val, 2);
+                    }
+                    window.interpreter.regvals[op_one] = val;
+                    console.log(op_one + " " + val)
+                    break;
+                }
+
+                matches = op_two.match(/\[r([0-9]|1[0-5])[,]\s(\+|\-)?r([0-9]|1[0-5])\]/gi);
+                if(matches !== null) {
+                    matches = matches[0];
+                    console.log('b');
+                    var addr = window.regvals[parseInt(matches.slice(2))];
+                    console.log(matches.slice(2) + " " + addr);
+                    var offset = parseInt(matches.slice(matches.indexOf(' ')+2));
+                    offset = window.interpreter.regvals[offset];
+                    console.log("off " + offset)
+                    if(op_two.slice(-1) == '!'){
+                        window.interpreter.regvals[parseInt(matches.slice(2))] = addr + offset;
+                    }
+                        
+                    addr += offset;
+                    console.log(addr + " " + typeof(addr) + " " + size);
+                    var val = '';
+                    for(var x = addr, y = 0 ; y < size ; x++, y++)
+                        val += Number(Boolean(mem[x]));
+                    console.log("v " + val)
+                    if(signed) {
+                        val = parseInt(val.slice(1), 2) - Math.pow(2, size-1);
+                    }
+                    else {
+                        val = parseInt(val, 2);
+                    }
+                    window.interpreter.regvals[op_one] = val;
+                    console.log(op_one + " " + val)
+                    break;
+                }
+
+                matches = op_two.match(/\[r([0-9]|1[0-5])\][,]\s[#](\+|\-)?[0-9]+/gi);
+                if(matches !== null) {
+                    matches = matches[0];
+                    var addr = window.regvals[parseInt(matches.slice(2))];
+                    console.log(matches.slice(2) + " " + addr);
+                    var offset = parseInt(op_two.slice(op_two.indexOf('#')+1));
+                    window.interpreter.regvals[parseInt(matches.slice(2))] = addr + offset;
+                        
+                    console.log(addr + " " + typeof(addr) + " " + size);
+                    var val = '';
+                    for(var x = addr, y = 0 ; y < size ; x++, y++)
+                        val += Number(Boolean(mem[x]));
+                    console.log("v " + val)
+                    if(signed) {
+                        val = parseInt(val.slice(1), 2) - Math.pow(2, size-1);
+                    }
+                    else {
+                        val = parseInt(val, 2);
+                    }
+                    window.interpreter.regvals[op_one] = val;
+                    console.log(op_one + " " + val)
+                    break;
+                }
+
+                matches = op_two.match(/\[r([0-9]|1[0-5])\][,]\s(\+|\-)?r([0-9]|1[0-5])/gi);
+                if(matches !== null) {
+                    console.log("ROFL")
+                    matches = matches[0];
+                    console.log('b');
+                    var addr = window.regvals[parseInt(matches.slice(2))];
+                    console.log(matches.slice(2) + " " + addr);
+                    var offset = matches.slice(matches.indexOf('+'));
+                    if(offset == -1){
+                        offset = matches.slice(matches.indexOf('-'));
+                        if(offset == -1)
+                            offset = matches.slice(matches.indexOf(',') + 3);
+                    }
+                    offset = window.interpreter.regvals[offset];
+                    console.log("off " + offset)
+                    window.interpreter.regvals[parseInt(matches.slice(2))] = addr + offset;
+                    
+                    console.log(addr + " " + typeof(addr) + " " + size);
+                    var val = '';
+                    for(var x = addr, y = 0 ; y < size ; x++, y++)
+                        val += Number(Boolean(mem[x]));
+                    console.log("v " + val)
+                    if(signed) {
+                        val = parseInt(val.slice(1), 2) - Math.pow(2, size-1);
+                    }
+                    else {
+                        val = parseInt(val, 2);
+                    }
+                    window.interpreter.regvals[op_one] = val;
+                    console.log(op_one + " " + val)
+                    break;
+                }
+
+                matches = op_two.match(/\[r([0-9]|1[0-5])\]/gi);
+                if(matches !== null) {
+                    matches = matches[0];
+                    console.log('a ' + matches);
+                    var addr = window.interpreter.regvals[parseInt(matches.slice(2))];
+                    console.log(addr + " " + typeof(addr));
+                    var val = '';
+                    for(var x = addr, y = 0 ; y < size ; x++, y++)
+                        val += Number(Boolean(mem[x]));
+                    console.log("v " + val)
+                    if(signed) {
+                        val = parseInt(val.slice(1), 2) - Math.pow(2, size-1);
+                    }
+                    else {
+                        val = parseInt(val, 2);
+                    }
+                    window.interpreter.regvals[op_one] = val;
+                    break;
+                }
+            break;
+        }
+        console.log('c');
+        instateRegisters();
         return;
     }
 }
