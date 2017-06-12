@@ -3,7 +3,6 @@ var cont = [];
 var labs = new Object();        //labels in code(branch targets)
 var interpreter = new Object();
 
-
 //setup the interpreter object
 function setup_interpreter() {
     interpreter = window.interpreter;
@@ -212,8 +211,8 @@ function preprocess() {
 
 // Compiles a given program
 function processcont(tp){
-    var dataprocessing = ['and', 'add', 'sub', 'rsb', 'adc', 'sbc', 'rsc', 'orr', 'eor', 'bic', 'tst', 'teq']
-    var dataprotworeg = ['mov', 'mvn', 'cmp', 'cmn', 'clz']
+    var dataprocessing = ['and', 'add', 'sub', 'rsb', 'adc', 'sbc', 'rsc', 'orr', 'eor', 'bic'];
+    var dataprotworeg = ['mov', 'mvn', 'cmp', 'cmn', 'clz', 'tst', 'teq'];
     var memoryaccess = ['ldr', 'str', 'ldm', 'stm']
     var mult_instr = ['mul', 'mla']
     var longmul_instr = ['umull', 'umlal', 'smull', 'smlal']
@@ -308,7 +307,9 @@ function processcont(tp){
                     break;
                 }
             }
+            //alert("error flag " + error_flag) ;
             error_flag = checkdpregs(regs, 0);
+            //alert("error flag "+ error_flag);
             if(error_flag){
                 //alert(regs);
                 //alert("HERE");
@@ -892,7 +893,7 @@ function encode(cont){
                 bin += '0';
             }
             bin += dpsco[op];       // opcode
-            alert(dpsco[op]);
+            //alert(dpsco[op]);
             if(set_flg || op == 'cmp' || op == 'cmn'){
                 bin += '1';
             }
@@ -910,7 +911,7 @@ function encode(cont){
                 bin += '11110001'
                 bin += toBin(parseInt(ins[2].slice(1)), 4);
                 encodes.push(toHex(bin));   // add to the encodes array
-                alert(bin.length + ' ' + bin);
+                //alert(bin.length + ' ' + bin);
                 continue;    
             }
             if(imm_flg){
@@ -986,10 +987,10 @@ function encode(cont){
             pre_flg = 0;
             zer_flg = 0;
             if(op == 'ldr' || op == 'str'){
-                alert(cond.length);
+                //alert(cond.length);
                 if(cond.length == 2){
                     bin = bin + conco[cond] + '01';
-                    alert(bin);
+                    //alert(bin);
                 }
                 else{
                     bin = bin + conco['al'] + '01';
