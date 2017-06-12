@@ -74,7 +74,7 @@ function preprocess() {
             icont[i] = icont[i].slice(0, com);
         }
         //alert(icont[i]);
-        if(icont[i] == ".DATA") {
+        if(icont[i].toLowerCase() == ".data") {
             i += 1;
             for( ; i < icont.length ; i++) {
                 icont[i].replace(/\s+/gi, " ");

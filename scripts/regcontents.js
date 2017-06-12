@@ -108,7 +108,7 @@ function decdriver() {
 	deci = true;
 }
 
-function bindriver() {
+function bindriver() { 
 	deci = window.deci;
 	bin = window.bin;
 	hexa = window.hexa;
