@@ -11,6 +11,7 @@ function setup_interpreter() {
     labs = window.labs
 
     interpreter["code"] = cont;     //all the code
+    interpreter['lines'] = cont.length;         //lines of code
     interpreter["data"] = datasec;  //data section
     interpreter["labels"] = labs;   //branch targets
     interpreter["cline"] = 0;       //current line
@@ -24,6 +25,7 @@ function setup_interpreter() {
     interpreter["deci"] = window.deci;                  //flags to indicate register content state
     interpreter["bin"] = window.bin;
     interpreter["hexa"] = window.hexa;
+    interpreter["compiled"] = true;
 }
 
 
@@ -376,6 +378,12 @@ function processcont(tp){
         }
         if(j < memoryaccess.length){  // check if it is a memory accessing instruction
             if(j < 2) {
+                if(ins.length > 7){
+                    error_flag = 1;
+                    error_msg = "Invalid instruction.";
+                    break;
+                }
+
                 if(ins.length > 4){
                     cc = ins.slice(3,5);
                     if(typeof (conditioncodes.find(function(c) {return c == cc})) === 'undefined') {
@@ -388,6 +396,14 @@ function processcont(tp){
                 }
                 if(ins.length == 4 || ins.length == 6) {
                     if(ins.slice(-1) != 'b' && ins.slice(-1) != 'h') {
+                        error_flag = 1;
+                        error_msg = "Invalid size specification.";
+                        break;
+                    }
+                }
+                if(ins.length == 7) {
+                    var sizspec = ins.slice(-2);
+                    if(sizspec != 'sb' && sizspec != 'sh') {
                         error_flag = 1;
                         error_msg = "Invalid size specification.";
                         break;
@@ -663,6 +679,7 @@ function processcont(tp){
             fcont += "<br/>" + cont[x];
         }
         document.getElementById("code").innerHTML = fcont;
+        window.interpreter.compile_error = true;
     }  
     else{
         alert("No errors!");
@@ -799,6 +816,7 @@ function checkdpregs(regs, categ){
 function encode(cont){
     //alert("ENTER " + cont.length);
     var encodes = [];
+    var bin;
     for(i = 0; i < cont.length; i++){
         //alert(i);
         ins = cont[i].split(' ');

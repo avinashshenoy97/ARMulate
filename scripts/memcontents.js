@@ -117,6 +117,7 @@ function writeToMem(dat, at, size) {
 	var bdata = extend((dat >>> 0).toString(2), 32).slice(-size);
 	for(var i = at, j = 0 ; j < size ; i++, j++) {
 		mem[i] = Number(bdata[j]);
+		mem.changed[i] = true;
 	}
 
 	instateMemory(mem.currBitView);				//reinstate changed memory
