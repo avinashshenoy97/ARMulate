@@ -104,8 +104,8 @@ function decdriver() {
 		instate(regvals, flags);
 	}
 
-	bin = hexa = false;
-	deci = true;
+	window.interpreter.bin = window.interpreter.hexa = false;
+	window.interpreter.deci = true;
 }
 
 function bindriver() { 
@@ -143,8 +143,8 @@ function bindriver() {
 		instate(regvals, flags);
 	}
 
-	deci = hexa = false;
-	bin = true;
+	window.interpreter.deci = window.interpreter.hexa = false;
+	window.interpreter.bin = true;
 }
 
 function hexdriver() {
@@ -178,8 +178,8 @@ function hexdriver() {
 		instate(regvals, flags);
 	}
 
-	deci = bin = false;
-	hexa = true;
+	window.interpreter.deci = window.interpreter.bin = false;
+	window.interpreter.hexa = true;
 }
 
 function copy() {

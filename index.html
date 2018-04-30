@@ -70,6 +70,11 @@
 			d.scrollTop = event.target.scrollTop;
 		}
 	</script>
+	<style>
+		#code {
+			padding-left: 5px;
+		}
+	</style>
 </head>
 
 <body onresize="refreshpage()">
@@ -80,8 +85,8 @@
 		<img class = "dis" src="resources/bin.svg">
 		<img id = "hex" src="resources/hex.png" class="enab">
 		<img class = "dis" src="resources/hex.png">
-		<img id = "interpret " onclick = "interpret()"src="resources/interpret.svg" class="enab">
-		<img class = "dis" src="resources/interpret.svg">
+		<img id = "interpret" onclick = "interpret()"src="resources/interpret.svg" class="enab" style="display: none;">
+		<img class = "dis" src="resources/interpret.svg" style="display: inline;">
 		<img id = "compile" onclick = "processcont('0')" src="resources/compile.svg" class="enab">
 		<img class = "dis" src="resources/compile.svg">
 		<img id = "run" src="resources/run.svg" class="enab">

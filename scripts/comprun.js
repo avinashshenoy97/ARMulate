@@ -22,9 +22,9 @@ function setup_interpreter() {
     interpreter["bindriver"] = window.bindriver;      //convert all registers to binary values
     interpreter["hexdriver"] = window.hexdriver;      //convert all registers to hexadecimal values
     interpreter["copier"] = window.copy;                //copy decimalregisters to registers
-    interpreter["deci"] = window.deci;                  //flags to indicate register content state
-    interpreter["bin"] = window.bin;
-    interpreter["hexa"] = window.hexa;
+    //interpreter["deci"] = window.deci;                  //flags to indicate register content state
+    //interpreter["bin"] = window.bin;
+    //interpreter["hexa"] = window.hexa;
     interpreter["compiled"] = true;
 }
 
@@ -40,7 +40,7 @@ function preprocess() {
     cont = window.cont;
     datasec = window.datasec
     labs = window.labs
-    var memadd = 10000;        //start storing from
+    var memadd = 1000;        //start storing from
 
     var d = document.getElementById("compile");
     d.style.display = "none";
@@ -275,7 +275,7 @@ function processcont(tp){
                 break;
             }
         }
-        
+
         if(j < dataprocessing.length){  // check if it is a data processing instruction
             //alert('lo')
             if(ins.length > 3){         // check if the cpsr contents have to be set
@@ -543,15 +543,20 @@ function processcont(tp){
             continue;
         }
         if(ins.slice(0, 3) == 'swi'){
+            //alert('found swi');
             conds = ins.slice(3);
-            for(k = 0; k < conditioncodes.length; k++){
-                if(conds == conditioncodes[k]){
-                    break;
+            //alert(conds);
+            if(conds.length > 0) {
+                for(k = 0; k < conditioncodes.length; k++){
+                    if(conds == conditioncodes[k]){
+                        break;
+                    }
                 }
-            }
-            if(k == conditioncodes.length){
-                error_flag = 1;
-                error_msg = 'Invalid condition code.'
+                if(k == conditioncodes.length){
+                    error_flag = 1;
+                    error_msg = 'Invalid condition code.'
+                    alert('lolol');
+                }
             }
             if(regs.length == 4){
                 for(k = 0; k < swiins.length; k++){
@@ -690,18 +695,23 @@ function processcont(tp){
         k = 0;
         for(i = 0; i < cont.length; i++){
             if(cont[i] == ''){
-                encds = '<center>' + encds + '</center>' 
+                encds += '<center>' + 'NOOP' + '</center>' 
             }
             else{
-                encds = '<center>' + encds + enc[k] + '</center>' 
+                encds += '<center>' + enc[k] + '</center>' 
                 k += 1;
             }
+            console.log(encds);
         }
         var cont = document.getElementById("code").innerHTML;
         cont = cont.replace(/\n/g, "<br/>");
         document.getElementById("code").innerHTML = cont;
         document.getElementById("encode").innerHTML = encds;
         document.getElementById("code").addEventListener("scroll", scrollTogether);
+
+        var btn = document.getElementById("interpret");
+        btn.style.display = "inline";
+        btn.nextElementSibling.style.display = "none";
     }
 
     setup_interpreter();
@@ -817,8 +827,14 @@ function encode(cont){
     //alert("ENTER " + cont.length);
     var encodes = [];
     var bin;
+    console.log("encode\n", cont);
     for(i = 0; i < cont.length; i++){
-        //alert(i);
+        //alert(cont[i]);
+        /*console.log(encodes);
+        if(cont[i].length === 0) {
+            encodes.push(' ')
+            continue;
+        }*/
         ins = cont[i].split(' ');
         bin = ''
         // check if it is a dataprocessing instruction with 3 registers

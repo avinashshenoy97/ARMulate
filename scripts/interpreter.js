@@ -59,6 +59,8 @@ function processconditions(cc) {
 function instateRegisters() {
     window.interpreter.copier();
     window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
+
+    console.log("Instated registers", window.interpreter.deci, window.interpreter.bin, window.interpreter.hexa);
     
     if(window.interpreter.bin)
         window.interpreter.bindriver();
