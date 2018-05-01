@@ -72,38 +72,40 @@ function preprocess() {
     document.getElementById("editor").appendChild(d);
 
     var icont = icont.split('\n');        // makes a list of instructions
-    for(var i = 0 ; i < icont.length ; i++) {
-        icont[i] = icont[i].trim();
-        com = icont[i].search(';');
+    for(var _i = 0 ; _i < icont.length ; _i++) {
+        icont[_i] = icont[_i].trim();
+        com = icont[_i].search(';');
         if(com != -1){
-            icont[i] = icont[i].slice(0, com);
+            icont[_i] = icont[_i].slice(0, com);
         }
         //alert(icont[i]);
-        if(icont[i].toLowerCase() == ".data") {
-            i += 1;
-            for( ; i < icont.length ; i++) {
-                icont[i].replace(/\s+/gi, " ");
-                icont[i].replace(/\s*\,\s*/gi, ",")
-                if(icont[i].length == 0)
+        if(icont[_i].toLowerCase() == ".data") {
+            //alert("entered data section, " + _i);
+            _i += 1;
+            for( ; _i < icont.length ; _i++) {
+                //alert("i = " + _i);
+                icont[_i].replace(/\s+/gi, " ");
+                icont[_i].replace(/\s*\,\s*/gi, ",")
+                if(icont[_i].length == 0)
                     continue;
 
-                var ind = icont[i].indexOf(":");
-                var labl = icont[i].slice(0, ind);
+                var ind = icont[_i].indexOf(":");
+                var labl = icont[_i].slice(0, ind);
                 datasec[labl] = memadd;
-
-                if(icont[i][ind+1] == ' ') {
+                
+                if(icont[_i][ind+1] == ' ') {
                     //alert("hereee")
-                    ind = icont[i].indexOf("."); alert("ind " + ind)
-                    var d = icont[i].slice(ind).indexOf(" ") + ind; alert("d " + d)
-                    var type = icont[i].slice(ind, d).toLowerCase();
+                    ind = icont[_i].indexOf("."); //alert("ind " + ind)
+                    var d = icont[_i].slice(ind).indexOf(" ") + ind; //alert("d " + d)
+                    var type = icont[_i].slice(ind, d).toLowerCase();
                     //alert(type)
                     var size = 8;       //bits
-                    var dat = icont[i].slice(d+1).split(",")
+                    var dat = icont[_i].slice(d+1).split(",")
                     console.log(dat)
 
                     if(type == ".asciz") {
                         size *= 1;
-                        var dat = String(icont[i].match(/["]\w*["]/gi));
+                        var dat = String(icont[_i].match(/["]\w*["]/gi));
                         //alert("d " + dat + " " + typeof dat)
                         //alert("w " + typeof writeToMem(0, 0));
                         console.log(dat.charCodeAt(k))
@@ -134,16 +136,21 @@ function preprocess() {
                         for(var i = 0 ; i < dat.length ; i++) {
                             var d = parseInt(dat[i]);
                             if(d > 0) {
-                                if(d > (Math.pow(2, size) -1))
+                                if(d > (Math.pow(2, size) -1)) {
+                                    //alert("true 3");
                                     return true;
+                                }
                             }
                             else {
-                                if(d < -(Math.pow(2, size-1)))
+                                if(d < -(Math.pow(2, size-1))) {
+                                    //alert("true 4");
                                     return true;
+                                }
                             }
                             writeToMem(d, memadd, size);
                             memadd += size;
                         }
+                        //alert(dat);
                     }
                     else if(type == ".halfword") {
                         size *= 2;
@@ -161,18 +168,21 @@ function preprocess() {
                             memadd += size;
                         }
                     }
-                    else
+                    else {
+                        //alert("true 1");
                         return true;
+                    }
                 }
                 else {
+                    //alert("true 2" + icont[i] + " " + icont[i][ind + 1]);
                     return true;
                 }
             }
         }
         else {
-            var blabl = icont[i].search(":");
+            var blabl = icont[_i].search(":");
             if(blabl != -1) {
-                var ins = icont[i].slice(blabl+1).trim();
+                var ins = icont[_i].slice(blabl+1).trim();
                 if(ins.search(/^bl^(ic)?/gi) != -1) {
                     var t = ins.indexOf(" ");
                     ins = ins.slice(0, t).toLowerCase() + ins.slice(t);
@@ -186,14 +196,14 @@ function preprocess() {
                 ins = remspace(ins);
                 cont.push(ins);
 
-                blabl = icont[i].slice(0, blabl);
+                blabl = icont[_i].slice(0, blabl);
                 if(blabl.search(" ") != -1)
                     return true;
                 
-                labs[blabl] = i;
+                labs[blabl] = _i;
             }
             else {
-                var ins = icont[i];
+                var ins = icont[_i];
                 if(ins.search(/^(b)(l)?/gi) != -1) {
                     var t = ins.indexOf(" ");
                     ins = ins.slice(0, t).toLowerCase() + ins.slice(t);
@@ -734,12 +744,12 @@ function remspace(cont){
 // Checks the validity of the registers in the register list
 function checkdpregs(regs, categ){
     var noshift = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])$/
-    var noshiftimm = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s[#]([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-3][0-9][0-9][0-9]|[4][0][0-9][0-5])$/
-    var immshift = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s([l][s][lr]|[a][s][r]|[r][o][r])\s[#]([0-9]|[1-2][0-9]|3[0-1])$/
+    var noshiftimm = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s[#][-]?([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-3][0-9][0-9][0-9]|[4][0][0-9][0-5])$/
+    var immshift = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s([l][s][lr]|[a][s][r]|[r][o][r])\s[#][-]?([0-9]|[1-2][0-9]|3[0-1])$/
     var regshift = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s([l][s][lr]|[a][s][r]|[r][o][r])\s[r]([0-9]|1[0-5])$/
     var grptwo = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])$/
-    var grptwoshift = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s([l][s][lr]|[a][s][r]|[r][o][r])\s[#]([0-9]|[1-2][0-9]|3[0-1])$/
-    var grptwoimm = /^[r]([0-9]|1[0-5])[,]\s[#]([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-3][0-9][0-9][0-9]|[4][0][0-9][0-5])$/
+    var grptwoshift = /^[r]([0-9]|1[0-5])[,]\s[r]([0-9]|1[0-5])[,]\s([l][s][lr]|[a][s][r]|[r][o][r])\s[#][-]?([0-9]|[1-2][0-9]|3[0-1])$/
+    var grptwoimm = /^[r]([0-9]|1[0-5])[,]\s[#][-]?([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-3][0-9][0-9][0-9]|[4][0][0-9][0-5])$/
     var grptwolink = /^[p][c][,]\s[l][r]$/
     
     var nooffset = /^[r]([0-9]|1[0-5])[,]\s(\[[r]([0-9]|1[0-5])\]|[=]([a-z]|[A-Z]|_)(\w)*)$/

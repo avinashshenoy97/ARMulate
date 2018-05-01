@@ -1182,6 +1182,7 @@ function _interpret() {
                 var matches = null;
                 matches = op_two.match(/\[r([0-9]|1[0-5])[,]\s[#](\+|\-)?[0-9]+\]/gi);
                 if(matches !== null) {
+                    console.log("LDR matched 1");
                     matches = matches[0];
                     var addr = window.regvals[parseInt(matches.slice(2))];
                     console.log(matches.slice(2) + " " + addr);
@@ -1209,6 +1210,7 @@ function _interpret() {
                 
                 matches = op_two.match(/\[r([0-9]|1[0-5])[,]\s(\+|\-)?r([0-9]|1[0-5])\]/gi);
                 if(matches !== null) {
+                    console.log("LDR matched 2");
                     matches = matches[0];
                     console.log('b');
                     var addr = window.regvals[parseInt(matches.slice(2))];
@@ -1239,6 +1241,7 @@ function _interpret() {
                 
                 matches = op_two.match(/\[r([0-9]|1[0-5])\][,]\s[#](\+|\-)?[0-9]+/gi);
                 if(matches !== null) {
+                    console.log("LDR matched 3");
                     matches = matches[0];
                     var addr = window.regvals[parseInt(matches.slice(2))];
                     console.log(matches.slice(2) + " " + addr);
@@ -1263,6 +1266,7 @@ function _interpret() {
                 
                 matches = op_two.match(/\[r([0-9]|1[0-5])\][,]\s(\+|\-)?r([0-9]|1[0-5])/gi);
                 if(matches !== null) {
+                    console.log("LDR matched 4");
                     console.log("ROFL")
                     matches = matches[0];
                     console.log('b');
@@ -1296,6 +1300,7 @@ function _interpret() {
                 
                 matches = op_two.match(/\[r([0-9]|1[0-5])\]/gi);
                 if(matches !== null) {
+                    console.log("LDR matched 5");
                     matches = matches[0];
                     console.log('a ' + matches);
                     var addr = window.interpreter.regvals[parseInt(matches.slice(2))];
@@ -1312,6 +1317,13 @@ function _interpret() {
                     }
                     window.interpreter.regvals[op_one] = val;
                     break;
+                }
+
+                eqLabel = op_two.indexOf('=');
+                if(eqLabel > -1) {
+                    labelIs = op_two.slice(eqLabel+1);
+                    console.log("Loading label ", labelIs, " to ", window.interpreter["data"][labelIs]);
+                    window.interpreter.regvals[op_one] = window.interpreter["data"][labelIs];
                 }
                 break;
             
@@ -1504,6 +1516,10 @@ function _interpret() {
                 window.interpreter['cline'] = window.labs[ins[1]];
                 console.log("jumped to ", window.interpreter['cline']);
             }
+        }
+        else {
+            window.interpreter['cline'] = window.labs[ins[1]];
+            console.log("jumped to ", window.interpreter['cline']);
         }
 
         return;
