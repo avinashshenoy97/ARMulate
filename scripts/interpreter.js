@@ -1,71 +1,71 @@
 function processconditions(cc) {
     var conditioncodes = ['eq', 'ne', 'cs', 'hs', 'cc', 'lo', 'mi', 'pl', 'vs', 'vc', 'hi', 'ls', 'ge', 'lt', 'gt', 'le', 'al', 'sh', 'sb'];
-
+    
     var p = conditioncodes.findIndex(function (c) { return c == cc });
-    alert(p);
+    //alert(p);
     switch (p) {
         case 0:     //eq
             return Boolean(window.interpreter['flags'].z);   //if z = 1; return true
-
+        
         case 1:     //ne
             return !Boolean(window.interpreter['flags'].z);    //if z = 0; return true
-
+        
         case 2: case 3:     //cs or hs
             return Boolean(window.interpreter['flags'].c);     //if c = 1; return true
-
+        
         case 4: case 5:     //cc or lo
             return !Boolean(window.interpreter['flags'].c);    //if c = 0; return true
-
+        
         case 6:             //mi
             return Boolean(window.interpreter['flags'].n);     //if n = 1; return true
-
+        
         case 7:             //pl
             return (!Boolean(window.interpreter['flags'].n) || Boolean(flag.z));   //if n=0 or z=1; return true
-
+        
         case 8:             //vs
             return Boolean(window.interpreter['flags'].v);     //if v=1; return true
-
+        
         case 9:             //vc
             return !Boolean(window.interpreter['flags'].v);    //if v=0; return false
-
+        
         case 10:            //hi
             return !Boolean(window.interpreter['flags'].n);     //if n=0; return true
-
+        
         case 11:            //ls
             return (Boolean(window.interpreter['flags'].n) || Boolean(window.interpreter['flags'].z));    //if n=1 or z=1;
-
+        
         case 12:            //ge
             return (!Boolean(window.interpreter['flags'].n) || Boolean(window.interpreter['flags'].z));   //if n=0 or z=1; return true
-
+        
         case 13:            //lt
             return Boolean(window.interpreter['flags'].n);     //if n = 1; return true
-
+        
         case 14:            //gt
             return !Boolean(window.interpreter['flags'].n);     //if n=0; return true
-
+        
         case 15:            //le
             return (Boolean(window.interpreter['flags'].n) || Boolean(window.interpreter['flags'].z));    //if n=1 or z=1;
-
+        
         case 16:            //al
             return true;
-
+        
         case 17: case 18:
             return true;
     }
-
+    
     return undefined;
 }
 
 function instateRegisters() {
     window.interpreter.copier();
     window.interpreter.instate(window.interpreter['regvals'], window.interpreter['flags']);
-
+    
     console.log("Instated registers", window.interpreter.deci, window.interpreter.bin, window.interpreter.hexa);
     
     if(window.interpreter.bin)
-        window.interpreter.bindriver();
+    window.interpreter.bindriver();
     else if(window.interpreter.hexa)
-        window.interpreter.hexdriver();
+    window.interpreter.hexdriver();
 }
 
 
@@ -77,7 +77,7 @@ var longmul_instr = ['umull', 'umlal', 'smull', 'smlal']
 var controlflow = ['bl', 'b']       //important : has to be arranged in descending order of length
 var swiins = ['0x00', '0x02', '0x011', '0x12', '0x13', '0x66', '0x68', '0x69', '0x6a', '0x6b', '0x6c', '0x6d'];
 
-function interpret() {
+function _interpret() {
     //window.interpreter.bin = false;
     var cont = window.interpreter['code'];
     var oins = cont[window.interpreter['cline']];
@@ -131,15 +131,15 @@ function interpret() {
                     }
                     switch(ins[3]){
                         case 'lsl':
-                            op_one = op_one << shift_val;
-                            //alert(op_one + ' ' + shift_val);
-                            break;
+                        op_one = op_one << shift_val;
+                        //alert(op_one + ' ' + shift_val);
+                        break;
                         case 'lsr':
-                            op_one = op_one >> shift_val;
-                            break;
+                        op_one = op_one >> shift_val;
+                        break;
                         case 'asr':
-                            op_one = op_one >> shift_val;
-                            break;
+                        op_one = op_one >> shift_val;
+                        break;
                     }
                 }
                 window.interpreter['regvals'][dest] = op_one;
@@ -172,14 +172,14 @@ function interpret() {
                     }
                     switch(ins[3]){
                         case 'lsl':
-                            op_one = op_one << shift_val;
-                            break;
+                        op_one = op_one << shift_val;
+                        break;
                         case 'lsr':
-                            op_one = op_one >> shift_val;
-                            break;
+                        op_one = op_one >> shift_val;
+                        break;
                         case 'asr':
-                            op_one = op_one >> shift_val;
-                            break;
+                        op_one = op_one >> shift_val;
+                        break;
                     }
                 }
                 window.interpreter['regvals'][dest] = -op_one;
@@ -342,14 +342,14 @@ function interpret() {
                     }
                     switch(ins[4]){
                         case 'lsl':
-                            op_two = op_two << shift_val;
-                            break;
+                        op_two = op_two << shift_val;
+                        break;
                         case 'lsr':
-                            op_two = op_two >> shift_val;
-                            break;
+                        op_two = op_two >> shift_val;
+                        break;
                         case 'asr':
-                            op_two = op_two >> shift_val;
-                            break;
+                        op_two = op_two >> shift_val;
+                        break;
                     }
                 }
                 window.interpreter['regvals'][dest] = op_one + op_two;
@@ -1130,7 +1130,7 @@ function interpret() {
         }
         return;
     }
-
+    
     for(k = 0; k < memoryaccess.length; k++){
         if(op == memoryaccess[k]){
             break;
@@ -1142,20 +1142,20 @@ function interpret() {
                 var size = 8, ss, signed = false;
                 if(cond_exec == 1) {
                     if(ins[0].length > 6)
-                        ss = ins[0].slice(-2);
+                    ss = ins[0].slice(-2);
                     else
-                        ss = ins[0].slice(-1);
+                    ss = ins[0].slice(-1);
                 }
                 else {
                     if(ins[0].length > 4)
-                        ss = ins[0].slice(-2);
+                    ss = ins[0].slice(-2);
                     else
-                        ss = ins[0].slice(-1);
+                    ss = ins[0].slice(-1);
                 }
                 switch(ss) {
                     case 'b':
                         break;
-
+                    
                     case 'h':
                         size *= 2;
                         break;
@@ -1164,19 +1164,19 @@ function interpret() {
                         signed = true;
                         size *= 2;
                         break;
-
+                    
                     case 'sb':
                         signed = true;
                         break;
-
+                    
                     default:
                         size *= 4;
                 }
-
+                
                 var op_one = oins.slice(oins.indexOf(' ') + 1, oins.indexOf(','));
                 console.log("O " + op_one)
                 op_one = parseInt(op_one.slice(1));
-
+                
                 var op_two = oins.slice(oins.indexOf(','));
                 console.log(op_two)
                 var matches = null;
@@ -1189,12 +1189,12 @@ function interpret() {
                     if(op_two.slice(-1) == '!'){
                         window.interpreter.regvals[parseInt(matches.slice(2))] = addr + offset;
                     }
-                        
+                    
                     addr += offset;
                     console.log(addr + " " + typeof(addr) + " " + size);
                     var val = '';
                     for(var x = addr, y = 0 ; y < size ; x++, y++)
-                        val += Number(Boolean(mem[x]));
+                    val += Number(Boolean(mem[x]));
                     console.log("v " + val)
                     if(signed) {
                         val = parseInt(val.slice(1), 2) - Math.pow(2, size-1);
@@ -1206,7 +1206,7 @@ function interpret() {
                     console.log(op_one + " " + val)
                     break;
                 }
-
+                
                 matches = op_two.match(/\[r([0-9]|1[0-5])[,]\s(\+|\-)?r([0-9]|1[0-5])\]/gi);
                 if(matches !== null) {
                     matches = matches[0];
@@ -1219,12 +1219,12 @@ function interpret() {
                     if(op_two.slice(-1) == '!'){
                         window.interpreter.regvals[parseInt(matches.slice(2))] = addr + offset;
                     }
-                        
+                    
                     addr += offset;
                     console.log(addr + " " + typeof(addr) + " " + size);
                     var val = '';
                     for(var x = addr, y = 0 ; y < size ; x++, y++)
-                        val += Number(Boolean(mem[x]));
+                    val += Number(Boolean(mem[x]));
                     console.log("v " + val)
                     if(signed) {
                         val = parseInt(val.slice(1), 2) - Math.pow(2, size-1);
@@ -1236,7 +1236,7 @@ function interpret() {
                     console.log(op_one + " " + val)
                     break;
                 }
-
+                
                 matches = op_two.match(/\[r([0-9]|1[0-5])\][,]\s[#](\+|\-)?[0-9]+/gi);
                 if(matches !== null) {
                     matches = matches[0];
@@ -1244,11 +1244,11 @@ function interpret() {
                     console.log(matches.slice(2) + " " + addr);
                     var offset = parseInt(op_two.slice(op_two.indexOf('#')+1));
                     window.interpreter.regvals[parseInt(matches.slice(2))] = addr + offset;
-                        
+                    
                     console.log(addr + " " + typeof(addr) + " " + size);
                     var val = '';
                     for(var x = addr, y = 0 ; y < size ; x++, y++)
-                        val += Number(Boolean(mem[x]));
+                    val += Number(Boolean(mem[x]));
                     console.log("v " + val)
                     if(signed) {
                         val = parseInt(val.slice(1), 2) - Math.pow(2, size-1);
@@ -1260,7 +1260,7 @@ function interpret() {
                     console.log(op_one + " " + val)
                     break;
                 }
-
+                
                 matches = op_two.match(/\[r([0-9]|1[0-5])\][,]\s(\+|\-)?r([0-9]|1[0-5])/gi);
                 if(matches !== null) {
                     console.log("ROFL")
@@ -1272,7 +1272,7 @@ function interpret() {
                     if(offset == -1){
                         offset = matches.slice(matches.indexOf('-'));
                         if(offset == -1)
-                            offset = matches.slice(matches.indexOf(',') + 3);
+                        offset = matches.slice(matches.indexOf(',') + 3);
                     }
                     offset = window.interpreter.regvals[offset];
                     console.log("off " + offset)
@@ -1281,7 +1281,7 @@ function interpret() {
                     console.log(addr + " " + typeof(addr) + " " + size);
                     var val = '';
                     for(var x = addr, y = 0 ; y < size ; x++, y++)
-                        val += Number(Boolean(mem[x]));
+                    val += Number(Boolean(mem[x]));
                     console.log("v " + val)
                     if(signed) {
                         val = parseInt(val.slice(1), 2) - Math.pow(2, size-1);
@@ -1293,7 +1293,7 @@ function interpret() {
                     console.log(op_one + " " + val)
                     break;
                 }
-
+                
                 matches = op_two.match(/\[r([0-9]|1[0-5])\]/gi);
                 if(matches !== null) {
                     matches = matches[0];
@@ -1302,7 +1302,7 @@ function interpret() {
                     console.log(addr + " " + typeof(addr));
                     var val = '';
                     for(var x = addr, y = 0 ; y < size ; x++, y++)
-                        val += Number(Boolean(mem[x]));
+                    val += Number(Boolean(mem[x]));
                     console.log("v " + val)
                     if(signed) {
                         val = parseInt(val.slice(1), 2) - Math.pow(2, size-1);
@@ -1313,26 +1313,26 @@ function interpret() {
                     window.interpreter.regvals[op_one] = val;
                     break;
                 }
-            break;
-
+                break;
+            
             case 'str':
                 var size = 8, ss, signed = false;
                 if(cond_exec == 1) {
                     if(ins[0].length > 6)
-                        ss = ins[0].slice(-2);
+                    ss = ins[0].slice(-2);
                     else
-                        ss = ins[0].slice(-1);
+                    ss = ins[0].slice(-1);
                 }
                 else {
                     if(ins[0].length > 4)
-                        ss = ins[0].slice(-2);
+                    ss = ins[0].slice(-2);
                     else
-                        ss = ins[0].slice(-1);
+                    ss = ins[0].slice(-1);
                 }
                 switch(ss) {
-                    case 'b':
+                        case 'b':
                         break;
-
+                    
                     case 'h':
                         size *= 2;
                         break;
@@ -1341,19 +1341,19 @@ function interpret() {
                         signed = true;
                         size *= 2;
                         break;
-
+                    
                     case 'sb':
                         signed = true;
                         break;
-
+                    
                     default:
                         size *= 4;
                 }
-
+                
                 var op_one = oins.slice(oins.indexOf(' ') + 1, oins.indexOf(','));
                 console.log("O " + op_one)
                 op_one = parseInt(op_one.slice(1));
-
+                
                 var op_two = oins.slice(oins.indexOf(','));
                 console.log(op_two)
                 var matches = null;
@@ -1366,7 +1366,7 @@ function interpret() {
                     if(op_two.slice(-1) == '!'){
                         window.interpreter.regvals[parseInt(matches.slice(2))] = addr + offset;
                     }
-                        
+                    
                     addr += offset;
                     console.log(addr + " " + typeof(addr) + " " + size);
                     var val = window.interpreter.regvals[op_one];
@@ -1379,7 +1379,7 @@ function interpret() {
                     console.log(op_one + " " + val)
                     break;
                 }
-
+                
                 matches = op_two.match(/\[r([0-9]|1[0-5])[,]\s(\+|\-)?r([0-9]|1[0-5])\]/gi);
                 if(matches !== null) {
                     matches = matches[0];
@@ -1392,7 +1392,7 @@ function interpret() {
                     if(op_two.slice(-1) == '!'){
                         window.interpreter.regvals[parseInt(matches.slice(2))] = addr + offset;
                     }
-                        
+                    
                     addr += offset;
                     console.log(addr + " " + typeof(addr) + " " + size);
                     var val = window.interpreter.regvals[op_one];
@@ -1405,7 +1405,7 @@ function interpret() {
                     console.log(op_one + " " + val)
                     break;
                 }
-
+                
                 matches = op_two.match(/\[r([0-9]|1[0-5])\][,]\s[#](\+|\-)?[0-9]+/gi);
                 if(matches !== null) {
                     matches = matches[0];
@@ -1413,7 +1413,7 @@ function interpret() {
                     console.log(matches.slice(2) + " " + addr);
                     var offset = parseInt(op_two.slice(op_two.indexOf('#')+1));
                     window.interpreter.regvals[parseInt(matches.slice(2))] = addr + offset;
-                        
+                    
                     console.log(addr + " " + typeof(addr) + " " + size);
                     var val = window.interpreter.regvals[op_one];
                     if(signed) {
@@ -1425,7 +1425,7 @@ function interpret() {
                     console.log(op_one + " " + val)
                     break;
                 }
-
+                
                 matches = op_two.match(/\[r([0-9]|1[0-5])\][,]\s(\+|\-)?r([0-9]|1[0-5])/gi);
                 if(matches !== null) {
                     console.log("ROFL")
@@ -1437,7 +1437,7 @@ function interpret() {
                     if(offset == -1){
                         offset = matches.slice(matches.indexOf('-'));
                         if(offset == -1)
-                            offset = matches.slice(matches.indexOf(',') + 3);
+                        offset = matches.slice(matches.indexOf(',') + 3);
                     }
                     offset = window.interpreter.regvals[offset];
                     console.log("off " + offset)
@@ -1454,7 +1454,7 @@ function interpret() {
                     console.log(op_one + " " + val)
                     break;
                 }
-
+                
                 matches = op_two.match(/\[r([0-9]|1[0-5])\]/gi);
                 if(matches !== null) {
                     matches = matches[0];
@@ -1470,26 +1470,105 @@ function interpret() {
                     }
                     break;
                 }
-            break;
+                break;
         }
         console.log('c');
         instateRegisters();
         return;
     }
+    
+    // checking for branches
+    if(ins[0].length == 3){            // check for B
+        opcode = ins[0].slice(0, 1);
+        conds = ins[0].slice(1);
+    }
+    else if(ins[0].length == 4){       //check for BL
+        opcode = ins[0].slice(0, 2);
+        conds = ins[0].slice(2);
+    }
+    else if(ins[0].length <= 2){
+        opcode = ins[0];
+        conds = '';
+    }
+    
+    for(j = 0; j < controlflow.length; j++){
+        if(opcode == controlflow[j]){
+            break;
+        }
+    }
+    if(j < controlflow.length){     // check if it is a control flow instruction
+        console.log("control flow");
+        //console.log(opcode, conds, ins[1]);
+        if(conds != ''){
+            if(processconditions(conds)) {
+                window.interpreter['cline'] = window.labs[ins[1]];
+                console.log("jumped to ", window.interpreter['cline']);
+            }
+        }
+
+        return;
+    }
+
+    if(ins[0].toLocaleLowerCase() === 'swi') {
+        console.log('SWI found with : ', ins[1]);
+        if(ins[1] !== '0x011') {
+            alert('"' + ins[0] + ' ' + ins[1] + '"  on line ' + window.interpreter['cline'].toString() + ' not yet supported!');
+        }
+        else {
+            window.interpreter['cline'] = window.interpreter.lines + 1;
+        }
+    }
+
+    //console.log("interpreted ", window.interpreter['cline'], window.interpreter.lines);
+}
+
+function interpret() {
+    _interpret();
+    if(window.interpreter['cline'] >= window.interpreter.lines) {
+        var rbtn = document.getElementById("interpreticn");
+        rbtn.style.display = "none";
+        rbtn.nextElementSibling.style.display = "inline";
+
+        rbtn = document.getElementById("run");
+        rbtn.style.display = "none";
+        rbtn.nextElementSibling.style.display = "inline";
+    }
+    
+    window.interpreter.regvals[15] = (window.interpreter['cline'] * 4) + 400;
+    instateRegisters();
+    
 }
 
 function run() {
     if(!("compiled" in window.interpreter)) {
         processcont('0');
         if(window.interpreter.compile_error)
-            return;
+        return;
     }
-
+    
     var rbtn = document.getElementById("run");
     rbtn.style.display = "none";
     rbtn.nextElementSibling.style.display = "inline";
-
-    for (var i = 0; i < window.interpreter.lines ; i++) {
+    
+    //for (var i = 0; i < window.interpreter.lines ; i++) {
+    var iters = 0;
+    var iter_limit = 10000 * window.interpreter.lines;
+    while(window.interpreter['cline'] < window.interpreter.lines) {
         interpret();
+        iters++;
+        if(iters >= iter_limit) {
+            if(confirm("Your code has been running for a long long time. Are you sure you want to keep going?"))
+                iters = 0;
+            else
+                break;
+        }
+        //console.log(iters);
     }
+
+    var rbtn = document.getElementById("interpreticn");
+    rbtn.style.display = "none";
+    rbtn.nextElementSibling.style.display = "inline";
 }
+
+window.interpreter["interpreter"] = interpret;
+console.log("Registered interpreter");

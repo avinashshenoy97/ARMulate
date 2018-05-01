@@ -205,7 +205,7 @@ function decinstate() {				//put regvals in regbank on UI and maintain decimal r
 for(var x = 0 ; x < 16 ; x++)
 	regvals[x] = 0;
 
-regvals[13] = "0x" + (5000).toString(16);
+//regvals[13] = "0x" + (5000).toString(16);
 
 decinstate();
 instate(regvals, flags);

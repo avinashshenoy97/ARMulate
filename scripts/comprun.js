@@ -26,6 +26,10 @@ function setup_interpreter() {
     //interpreter["bin"] = window.bin;
     //interpreter["hexa"] = window.hexa;
     interpreter["compiled"] = true;
+    
+    interpreter['regvals'][15] = 400;
+    interpreter['regvals'][13] = 100;
+    instateRegisters();
 }
 
 
@@ -709,7 +713,7 @@ function processcont(tp){
         document.getElementById("encode").innerHTML = encds;
         document.getElementById("code").addEventListener("scroll", scrollTogether);
 
-        var btn = document.getElementById("interpret");
+        var btn = document.getElementById("interpreticn");
         btn.style.display = "inline";
         btn.nextElementSibling.style.display = "none";
     }
