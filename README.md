@@ -8,6 +8,9 @@
 
 Software that simulates the working of an ARM processor to a certain degree.
 
+![ARMulate](https://github.com/avinashshenoy97/ARMulate/blob/master/extras/ARMulate.png)
+
+
 The application is written using web technologies and run using nw, formerly known as node-webkit. It is based on `Chromium` and `node.js`.
 
 ## To test ARMulate :
